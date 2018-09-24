@@ -30,25 +30,50 @@ router.post('/publications', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.get('/publications/:id', (req, res, next) => {
-  if (typeof req.params.id === 'string') {
-    Publication.find({slug: req.params.id})
-      .exec()
-      .then(pub => res.json(pub))
-      .catch(err => next(err));
-  } else {
-    Publication.findById(req.params.id)
-      .exec()
-      .then(pub => {res.json(pub)})
-      .catch(err => next(err));
-  }
+router.put('/publications/:id', (req, res, next) => {
+  Publication.findById(req.params.id)
+    .exec()
+    .then(pub => {
+      console.log('not much of a route here')
+    })
+    .catch(err => next(err));
 
+});
+
+router.get('/publications/:id', (req, res, next) => {
+  Publication.findOne({slug: req.params.id})
+    .exec()
+    .then(pub => {
+      if (pub) {
+        res.json(pub)
+      } else {
+        Publication.findById(req.params.id)
+          .exec()
+          .then(pub => {res.json(pub)})
+          .catch(err => next(err));
+        }
+    })
+    .catch(err => next(err));
 });
 
 router.get('/submissions', (req, res, next) => {
   Submission.find({})
     .exec()
     .then(subs => res.json(subs))
+    .catch((err) => next(err));
+});
+
+router.get('/submission/:id', (req, res, next) => {
+  Submission.findById(req.params.id)
+    .exec()
+    .then(sub => {res.json(sub)})
+    .catch(err => next(err));
+});
+
+router.post('/submissions', (req, res, next) => {
+  const sub = new Submission({...req.body});
+  sub.save()
+    .then(sub => {res.json(sub)})
     .catch((err) => next(err));
 });
 

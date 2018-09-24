@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
 import * as actions from './actions';
+import { Table } from './framework'
 
 const moment = extendMoment(Moment);
 
@@ -10,10 +11,10 @@ const mapStateToProps = state => {
   return {...state};
 }
 
-const PublicationsList = ({publications, openPublication, router}) => {
+const PublicationsList = ({publications, openPublication}) => {
   const { all } = publications;
   return (
-    <table className='table table-striped table-bordered table-hover table-responsive'>
+    <Table striped bordered hover>
       <thead>
         <tr>
           <th>Publication Name</th>
@@ -35,7 +36,7 @@ const PublicationsList = ({publications, openPublication, router}) => {
           )
         })}
       </tbody>
-    </table>
+    </Table>
   )
 }
 

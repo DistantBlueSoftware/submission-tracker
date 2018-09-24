@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import Helmet from 'react-helmet';
 // import GenreAutosuggest from './GenreAutosuggest';
 import moment from 'moment';
+import { Button } from './framework';
 import { pad, slugify, iterator } from './lib';
 import * as actions from './actions';
 
@@ -27,27 +29,45 @@ class PublicationDetail extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    if (this.props.match.params && this.props.match.params.slug) {
+    const { match } = this.props;
+    if (match && match.params && match.params.slug) {
       this.props.updatePublication(this.state);
     } else {
       let pub = this.state;
       //generate slug; if identical slug exists, append a number
       pub.slug = slugify(pub.name);
-      const num = iterator(this.props.publications, 'slug', pub.slug);
+      const num = iterator(this.props.publications.all, 'slug', pub.slug);
       if (num !== 0) pub.slug = pub.slug + '-' + num;
 
       this.props.newPublication(pub);
     }
   }
-  render () {
+
+  componentDidMount() {
+    const { match, publications } = this.props;
+    const isNew = match.params && match.params.slug ? false : true;
+    if (!isNew) {
+      this.setState({
+        ...publications.current
+      })
+    }
+  }
+  render() {
+    console.log(this.state)
     const {match, publications, user, removePublication} = this.props;
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'].map((month, index) => <option key={index} value={pad(index+1, 2)}>{month}</option>)
     const days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31].map((day, index) => <option key={index} value={day}>{day}</option>)
     const genres = ['Fiction', 'Nonfiction', 'Poetry', 'Flash Fiction', 'Reviews', 'Translation', 'Art', 'Sound', 'Comics', 'Dance', 'Hybrid']
     const isNew = match.params && match.params.slug ? false : true;
-    const publication = isNew ? {} : publications.current;
+    const publication = isNew ? {} : this.state;
+    const pageTitle = isNew ? 'New Publication' : publication.name;
     return (
     <div>
+      <Helmet>
+        <meta charSet='utf-8' />
+        <title>{`${pageTitle} - Submission Manager - Home`}</title>
+        <link rel='canonical' href={`https://submissionmanager.phrasemagazine.com/${publication.slug}`} />
+      </Helmet>
       <form onSubmit={this.handleSubmit}>
         <div className='row'>
           <div className='col-md-12 col-md-offset-8'>
@@ -110,7 +130,7 @@ class PublicationDetail extends Component {
           <div className='col-md-1'>
             <div className='form-group'>
               <label htmlFor='payType'>Payment Type</label>
-                <select className='form-control' name='payType' value={publication.payType} onChange={this.handleChange}>
+                <select className='form-control' name='payType' id='payType' value={publication.payType} onChange={this.handleChange}>
                   <option value='per work'>per work</option>
                   <option value='per page'>per page</option>
                 </select>
@@ -122,17 +142,17 @@ class PublicationDetail extends Component {
               {/*<GenreAutosuggest genres={genres} value={publication.genre} onChange={this.handleChange} />*/}
           </div>
         </div>
-        <button className='btn btn-success' type='submit'>{isNew ? 'Add New' : 'Update'}</button>
+        <Button green type='submit'>{isNew ? 'Add New' : 'Update'}</Button>
       </form>
       {!isNew &&
         <p style={{fontSize: '10px', marginTop: '10px'}}>last updated: {moment(publication.lastUpdatedDate).format('dddd, MMMM Do YYYY, h:mm:ss A')} by {publication.lastUpdatedBy}</p>
         }
-      {user && user.authenticated && user.type === 'admin' &&
+      {user && user.authenticated &&
         <div style={{marginBottom: '10px'}}>
 
           <hr />
           <p style={{fontSize: '12px'}}>This action cannot be undone. Be certain it's what you want.</p>
-          <button className='btn btn-danger' onClick={removePublication}>Delete Publication</button>
+          <Button red onClick={removePublication}>Delete Publication</Button>
         </div>
       }
       </div>

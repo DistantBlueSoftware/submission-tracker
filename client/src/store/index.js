@@ -12,7 +12,7 @@ const persistConfig = {
   storage,
 }
 
-const history = createBrowserHistory();
+export const history = createBrowserHistory();
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

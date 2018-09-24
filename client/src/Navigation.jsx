@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
+import { Button } from './framework';
+import { Avatar } from './Avatar';
 import * as actions from './actions';
 
 const mapStateToProps = state => {
@@ -23,7 +25,8 @@ const Navigation = ({user, doLogout}) => (
     {user.authenticated ?
       <React.Fragment>
         <span className='navbar-text' style={{marginRight: '20px'}}>Welcome, {user.username}</span>
-        <button className='btn btn-outline-success' type='button' onClick={doLogout}>Logout</button>
+        <Avatar user={user} />
+        <Button green type='button' onClick={doLogout}>Logout</Button>
       </React.Fragment> :
       <React.Fragment>
         <NavLink className='nav-link' to='/login'><span>Login</span></NavLink>
