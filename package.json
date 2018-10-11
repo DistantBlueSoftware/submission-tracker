@@ -1,10 +1,10 @@
 {
-  "name": "cra-express-boilerplate",
+  "name": "submissions-tracker",
   "version": "1.0.0",
-  "description": "Opinionated full-stack architecture pattern for React/Redux && Node/Express apps. ",
+  "description": "Submissions tracking software for creatives or whoever.",
   "main": "index.js",
   "scripts": {
-    "start": "node server",
+    "start": "node index",
     "dev": "concurrently \"nodemon server\" \"cd ./client && react-scripts start\"",
     "build": "react-scripts build",
     "heroku-postbuild": "cd client && yarn && yarn run build",
