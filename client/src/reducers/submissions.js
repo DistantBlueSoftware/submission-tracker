@@ -1,4 +1,4 @@
-import { GET_SUBMISSIONS, OPEN_SUBMISSION, NEW_SUBMISSION, UPDATE_SUBMISSION, DELETE_SUBMISSION, ERROR } from '../constants/actionTypes';
+import { GET_SUBMISSIONS, OPEN_SUBMISSION, NEW_SUBMISSION, UPDATE_SUBMISSION, DELETE_SUBMISSION, SUBMISSION_ERROR } from '../constants/actionTypes';
 
 const INITIAL_STATE = {
   all: [],
@@ -16,7 +16,7 @@ export default function(state = INITIAL_STATE, action) {
     case UPDATE_SUBMISSION:
     case DELETE_SUBMISSION:
       return state;
-    case ERROR:
+    case SUBMISSION_ERROR:
       return { ...state, errorMessage: action.payload };
     default:
       return state;

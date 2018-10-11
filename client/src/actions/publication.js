@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_PUBLICATIONS, NEW_PUBLICATION, OPEN_PUBLICATION, ERROR } from '../constants/actionTypes';
+import { GET_PUBLICATIONS, NEW_PUBLICATION, UPDATE_PUBLICATION, OPEN_PUBLICATION, PUBLICATION_ERROR } from '../constants/actionTypes';
 import { push } from 'connected-react-router';
 
 export const getPublications = () => async dispatch => {
@@ -9,7 +9,18 @@ export const getPublications = () => async dispatch => {
       dispatch ({ type: GET_PUBLICATIONS, payload: data });
     } catch (e) {
       console.log(e)
-      dispatch({ type: ERROR, payload: 'Sorry, we couldn\t complete this request right now. Please try again.'});
+      dispatch({ type: PUBLICATION_ERROR, payload: 'Sorry, we couldn\t complete this request right now. Please try again.'});
+    }
+}
+
+export const findPublication = slug => async dispatch => {
+    try {
+      const response = await axios.get(`/api/publications/${slug}`);
+      const data = response.length ? response : response.data;
+      dispatch ({ type: OPEN_PUBLICATION, payload: data });
+    } catch (e) {
+      console.log(e)
+      dispatch({ type: PUBLICATION_ERROR, payload: 'Sorry, we couldn\t complete this request right now. Please try again.'});
     }
 }
 
@@ -22,7 +33,7 @@ export const openPublication = pub => async dispatch => {
     dispatch ({ type: OPEN_PUBLICATION, payload: data });
     dispatch(push(`/publications/${pub.slug}`))
   } catch (e) {
-    dispatch({ type: ERROR, payload: 'Something went wrong and we couldn\'t open the publication. Please try again.'});
+    dispatch({ type: PUBLICATION_ERROR, payload: 'Something went wrong and we couldn\'t open the publication. Please try again.'});
   }
 }
 
@@ -33,6 +44,16 @@ export const newPublication = pub => async dispatch => {
     dispatch ({ type: NEW_PUBLICATION, payload: data });
     dispatch(push(`/publications/${data.slug}`))
   } catch (e) {
-    dispatch({ type: ERROR, payload: 'Something went wrong and we couldn\'t create the publication. Please try again.'});
+    dispatch({ type: PUBLICATION_ERROR, payload: 'Something went wrong and we couldn\'t create the publication. Please try again.'});
+  }
+}
+
+export const updatePublication = pub => async dispatch => {
+  try {
+    const response = await axios.put(`/api/publications/${pub._id}`, pub);
+    const data = response.length ? response : response.data;
+    dispatch ({ type: UPDATE_PUBLICATION, payload: data });
+  } catch (e) {
+    dispatch({ type: PUBLICATION_ERROR, payload: 'Something went wrong and we couldn\'t update the publication. Please try again.'});
   }
 }

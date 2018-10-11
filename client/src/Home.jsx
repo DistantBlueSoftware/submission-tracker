@@ -22,7 +22,7 @@ class Home extends Component {
     this.props.getSubmissions();
   }
   render() {
-    const { submissions, publications, history } = this.props;
+    const { user, submissions, publications, history } = this.props;
     const { showModal } = this.state;
     const submissionCount = submissions.all && submissions.all.length ? submissions.all.length : 0;
     const publicationCount = publications.all && publications.all.length ? publications.all.length : 0;
@@ -34,12 +34,16 @@ class Home extends Component {
         <link rel='canonical' href='https://submissionmanager.phrasemagazine.com/' />
         </Helmet>
         <header>
-          <h1>submission manager 1.0</h1>
+          <h1>submission manager 1.1</h1>
           <h3>tracking <span style={{color: 'green'}}>{submissionCount}</span> submissions and <span style={{color: 'green'}}>{publicationCount}</span> publications</h3>
         </header>
+        {user.authenticated &&
+          <React.Fragment>
+            <Button blue onClick={() => history.push('/publications/new')}>New Publication</Button>
+            <Button green data-toggle='modal' data-target='#submission-modal'>New Submission</Button>
+          </React.Fragment>
+        }
         <PublicationsList />
-        <Button blue onClick={() => history.push('/publications/new')}>New Publication</Button>
-        <Button green data-toggle='modal' data-target='#submission-modal'>New Submission</Button>
         <SubmissionModal show={showModal} />
       </React.Fragment>
     )

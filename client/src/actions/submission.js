@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_SUBMISSIONS, OPEN_SUBMISSION, ERROR } from '../constants/actionTypes';
+import { GET_SUBMISSIONS, OPEN_SUBMISSION, SUBMISSION_ERROR } from '../constants/actionTypes';
 
 export const getSubmissions = () => async dispatch => {
     try {
@@ -7,6 +7,6 @@ export const getSubmissions = () => async dispatch => {
       const data = response.length ? response : response.data;
       dispatch ({ type: GET_SUBMISSIONS, payload: data });
     } catch (e) {
-      dispatch({ type: ERROR, payload: 'Sorry, we couldn\t complete this request right now. Please try again.'})
+      dispatch({ type: SUBMISSION_ERROR, payload: 'Sorry, we couldn\t complete this request right now. Please try again.'})
     }
 }

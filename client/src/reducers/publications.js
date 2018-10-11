@@ -1,4 +1,4 @@
-import { GET_PUBLICATIONS, OPEN_PUBLICATION, NEW_PUBLICATION, UPDATE_PUBLICATION, DELETE_PUBLICATION, ERROR } from '../constants/actionTypes';
+import { GET_PUBLICATIONS, OPEN_PUBLICATION, NEW_PUBLICATION, UPDATE_PUBLICATION, DELETE_PUBLICATION, PUBLICATION_ERROR } from '../constants/actionTypes';
 
 const INITIAL_STATE = {
   all: [],
@@ -13,11 +13,12 @@ export default function(state = INITIAL_STATE, action) {
     case OPEN_PUBLICATION:
       return {...state, current: action.payload};
     case NEW_PUBLICATION:
-      return {...state, all: [...state.all, action.payload]}
+      return {...state, all: [...state.all, action.payload], current: action.payload};
     case UPDATE_PUBLICATION:
+      return {...state, all: [...state.all], current: action.payload};
     case DELETE_PUBLICATION:
       return [];
-    case ERROR:
+    case PUBLICATION_ERROR:
       return {...state, errorMessage: action.payload};
     default:
       return state;

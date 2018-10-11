@@ -11,6 +11,7 @@ const requireAuth = passport.authenticate('jwt', { session: false });
 const requireSignin = passport.authenticate('local', { session: false });
 
 const Publication = require('./models/Publication');
+const User = require('./models/User');
 const Submission = require('./models/Submission');
 const Piece = require('./models/Piece');
 
@@ -34,7 +35,12 @@ router.put('/publications/:id', (req, res, next) => {
   Publication.findById(req.params.id)
     .exec()
     .then(pub => {
-      console.log('not much of a route here')
+      for (value in req.body) {
+        pub[value] = req.body[value];
+      };
+      pub.save()
+        .then(() => res.json(pub))
+        .catch(err => next(err));
     })
     .catch(err => next(err));
 
@@ -74,6 +80,18 @@ router.post('/submissions', (req, res, next) => {
   const sub = new Submission({...req.body});
   sub.save()
     .then(sub => {res.json(sub)})
+    .catch((err) => next(err));
+});
+
+router.put('/:user', (req, res, next) => {
+  User.findOne({username: req.params.user})
+    .exec()
+    .then(user => {
+      user.favorites && user.favorites.length ? user.favorites.push(req.body._id) : user.favorites = [req.body._id];
+      user.save()
+        .then(() => res.json(user))
+        .catch(err => next(err));
+    })
     .catch((err) => next(err));
 });
 

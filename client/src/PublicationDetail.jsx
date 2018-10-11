@@ -15,7 +15,11 @@ class PublicationDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
-
+      dateOpenMonth1: '01',
+      dateOpenDay1: 1,
+      dateCloseMonth1: '01',
+      dateCloseDay1: 1,
+      payType: 'work'
     }
   }
   handleChange = (e) => {
@@ -53,59 +57,52 @@ class PublicationDetail extends Component {
     }
   }
   render() {
-    console.log(this.state)
-    const {match, publications, user, removePublication} = this.props;
+    const {match, user, removePublication} = this.props;
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'].map((month, index) => <option key={index} value={pad(index+1, 2)}>{month}</option>)
     const days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31].map((day, index) => <option key={index} value={day}>{day}</option>)
     const genres = ['Fiction', 'Nonfiction', 'Poetry', 'Flash Fiction', 'Reviews', 'Translation', 'Art', 'Sound', 'Comics', 'Dance', 'Hybrid']
     const isNew = match.params && match.params.slug ? false : true;
-    const publication = isNew ? {} : this.state;
-    const pageTitle = isNew ? 'New Publication' : publication.name;
+    const pageTitle = this.state.name ? this.state.name : 'New Publication';
     return (
     <div>
       <Helmet>
         <meta charSet='utf-8' />
         <title>{`${pageTitle} - Submission Manager - Home`}</title>
-        <link rel='canonical' href={`https://submissionmanager.phrasemagazine.com/${publication.slug}`} />
+        <link rel='canonical' href={`https://submissionmanager.phrasemagazine.com/${this.state.slug}`} />
       </Helmet>
       <form onSubmit={this.handleSubmit}>
-        <div className='row'>
-          <div className='col-md-12 col-md-offset-8'>
-            {/*!isNew && <Button bsStyle='primary' onClick={addToUserPubs}>Add to My Publications</Button> */}
-          </div>
-        </div>
         <div className='form-group'>
           <label htmlFor='name'>Publication Name</label>
-          <input className='form-control' type='text' name='name' id='name' placeholder='Enter name' value={publication.name} onChange={this.handleChange} />
+          <input className='form-control' type='text' name='name' id='name' value={this.state.name} onChange={this.handleChange} />
         </div>
         <div className='form-group'>
           <label htmlFor='description'>Description</label>
-          <textarea className='form-control' name='description' value={publication.description} onChange={this.handleChange} />
+          <textarea className='form-control' name='description' value={this.state.description} onChange={this.handleChange} />
         </div>
         <div className='form-group'>
           <label htmlFor='website'>Website</label>
-          <input className='form-control' type='text' name='website' value={publication.website} onChange={this.handleChange} />
+          <input className='form-control' type='text' name='website' value={this.state.website} onChange={this.handleChange} />
         </div>
         <div className='row'>
           <div className='col-md-1'>
             <div className='form-group'>
               <label htmlFor='wordCount'>Word Count Maximum</label>
-              <input className='form-control' type='number' name='wordCount' value={publication.wordCount} onChange={this.handleChange} />
+              <input className='form-control' type='number' name='wordCount' value={this.state.wordCount} onChange={this.handleChange} />
             </div>
           </div>
           <div className='col-md-1'>
             <div className='form-group'>
               <label htmlFor='fee'>Fee</label>
-              <input className='form-control' type='number' name='fee' value={publication.fee} onChange={this.handleChange} />
+              <input className='form-control' type='number' name='fee' value={this.state.fee} onChange={this.handleChange} />
             </div>
           </div>
           <div className='col-md-1'>
             <div className='form-group'>
               <label htmlFor='dateOpenMonth1'>Open Date</label>
-              <select className='form-control' name='dateOpenMonth1' value={publication.dateOpenMonth1} onChange={this.handleChange}>
+              <select className='form-control' name='dateOpenMonth1' value={this.state.dateOpenMonth1} onChange={this.handleChange}>
                 {months}
               </select>
-              <select className='form-control' name='dateOpenDay1' value={publication.dateOpenDay1} onChange={this.handleChange}>
+              <select className='form-control' name='dateOpenDay1' value={this.state.dateOpenDay1} onChange={this.handleChange}>
                 {days}
               </select>
             </div>
@@ -113,10 +110,10 @@ class PublicationDetail extends Component {
           <div className='col-md-1'>
             <div className='form-group'>
               <label htmlFor='dateCloseMonth1'>Close Date</label>
-              <select className='form-control' name='dateCloseMonth1' value={publication.dateCloseMonth1} onChange={this.handleChange}>
+              <select className='form-control' name='dateCloseMonth1' value={this.state.dateCloseMonth1} onChange={this.handleChange}>
                 {months}
               </select>
-              <select className='form-control' name='dateCloseDay1' value={publication.dateCloseDay1} onChange={this.handleChange}>
+              <select className='form-control' name='dateCloseDay1' value={this.state.dateCloseDay1} onChange={this.handleChange}>
                 {days}
               </select>
             </div>
@@ -124,28 +121,28 @@ class PublicationDetail extends Component {
           <div className='col-md-1'>
             <div className='form-group'>
               <label htmlFor='pay'>Payment Amount</label>
-              <input className='form-control' type='number' name='pay' value={publication.pay} onChange={this.handleChange} />
+              <input className='form-control' type='number' name='pay' value={this.state.pay} onChange={this.handleChange} />
             </div>
           </div>
           <div className='col-md-1'>
             <div className='form-group'>
               <label htmlFor='payType'>Payment Type</label>
-                <select className='form-control' name='payType' id='payType' value={publication.payType} onChange={this.handleChange}>
-                  <option value='per work'>per work</option>
-                  <option value='per page'>per page</option>
+                <select className='form-control' name='payType' id='payType' value={this.state.payType} onChange={this.handleChange}>
+                  <option value='work'>per work</option>
+                  <option value='page'>per page</option>
                 </select>
             </div>
           </div>
         </div>
         <div className='row'>
           <div className='col-md-12'>
-              {/*<GenreAutosuggest genres={genres} value={publication.genre} onChange={this.handleChange} />*/}
+              {/*<GenreAutosuggest genres={genres} value={this.state.genre} onChange={this.handleChange} />*/}
           </div>
         </div>
         <Button green type='submit'>{isNew ? 'Add New' : 'Update'}</Button>
       </form>
       {!isNew &&
-        <p style={{fontSize: '10px', marginTop: '10px'}}>last updated: {moment(publication.lastUpdatedDate).format('dddd, MMMM Do YYYY, h:mm:ss A')} by {publication.lastUpdatedBy}</p>
+        <p style={{fontSize: '10px', marginTop: '10px'}}>last updated: {moment(this.state.lastUpdatedDate).format('dddd, MMMM Do YYYY, h:mm:ss A')} by {this.state.lastUpdatedBy}</p>
         }
       {user && user.authenticated &&
         <div style={{marginBottom: '10px'}}>

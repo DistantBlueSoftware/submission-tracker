@@ -10,7 +10,7 @@ const Dashboard = ({user}) => (
   <div>
     <h1>dashboard</h1>
     <h3>{user.name}</h3>
-    <img src={user.avatar || '/avatar.png'} width='100px'/>
+    <img src={user.avatar || '/avatar_1.png'} width='100px'/>
     <p><em>{user.username}</em></p>
   </div>
 )

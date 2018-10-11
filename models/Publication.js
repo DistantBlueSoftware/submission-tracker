@@ -1,27 +1,27 @@
 const mongoose = require('mongoose');
 
 const PublicationSchema = new mongoose.Schema({
-  name: {type: String},
-  slug: {type: String},
-  description: {type: String, optional: true},
-  website: {type: String, optional: true},
-  genre: {type: [String], optional: true},
-  wordCount: {type: Number, optional: true},
-  fee: {type: Number, optional: true},
+  name: {type: String, required: true},
+  slug: {type: String, required: true},
+  description: {type: String},
+  website: {type: String},
+  genre: {type: [String]},
+  wordCount: Number,
+  fee: {type: Number},
   dateCreated: {type: Date, default: Date.now},
   lastUpdatedBy: {type: String, default: 'anonymous'},
   lastUpdatedDate: {type: Date, default: Date.now},
-  dateOpenMonth1: {type: String, optional: true},
-  dateOpenDay1: {type: Number, optional: true},
-  dateCloseMonth1: {type: String, optional: true},
-  dateCloseDay1: {type: Number, optional: true},
-  dateOpenMonth2: {type: String, optional: true},
-  dateOpenDay2: {type: Number, optional: true},
-  dateCloseMonth2: {type: String, optional: true},
-  dateCloseDay2: {type: Number, optional: true},
-  fee: {type: Number, optional: true},
-  pay: {type: Number, optional: true},
-  payType: {type: String, optional: true}
+  dateOpenMonth1: String,
+  dateOpenDay1: Number,
+  dateCloseMonth1: String,
+  dateCloseDay1: Number,
+  dateOpenMonth2: String,
+  dateOpenDay2: Number,
+  dateCloseMonth2: String,
+  dateCloseDay2: Number,
+  fee: Number,
+  pay: Number,
+  payType: String
 });
 
 module.exports = mongoose.model('Publication', PublicationSchema);
