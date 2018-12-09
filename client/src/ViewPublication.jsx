@@ -18,6 +18,10 @@ class ViewPublication extends Component {
     super(props);
   }
   
+  isFavorite = pub => {
+    return ~this.props.user.favorites.indexOf(pub._id) && ~this.props.user.favorites.indexOf(pub.slug) ? false : true;
+  }
+  
   componentDidMount = async () => {
     const {slug} = this.props.match.params;
     const current = await this.props.findPublication(slug);
@@ -26,21 +30,27 @@ class ViewPublication extends Component {
   render() {
     const {match, publications, submissions, user, addToUserPubs} = this.props;
     const { all: allSubmissions } = submissions;
-    const userSubs = [];
+    const userSubs = allSubmissions.filter(sub => sub.user === user.username);
     const { current } = publications;
-    const averageResponseTime = (publication) => {
+    const pubSubs = allSubmissions.filter(sub => sub.publication === current.name);
+    const averageResponseTime = () => {
       let time = 0;
       let responses = 0;
-      const allSubs = allSubmissions.filter(sub => sub.publication === publication);
-      allSubs.forEach(sub => {
+      pubSubs.forEach(sub => {
         if (sub.dateHeard) {
           time += (moment(sub.dateHeard).diff(moment(sub.dateSubmitted), 'days'));
           responses++;
         }
       })
-      return time / responses + ' days';
+      return Math.ceil(time / responses) + ' days';
     };
+    const acceptanceRate = () => {
+      let count = pubSubs.length;
+      let acceptances = pubSubs.filter(sub => sub.status === 'Accepted').length;
+      return ((acceptances / count) * 100).toFixed(2) + '%' + ` (${acceptances}/${count})`;
+    }
     const userSubsToPub = userSubs.filter(sub => sub.publication === current.name).map((sub, index) => <tr key={index}><td>{sub.title}</td><td>{moment(sub.dateSubmitted).format('MM/DD/YYYY')}</td><td>{sub.status}</td></tr>)
+    const AddButton = user && user.favorites && !this.isFavorite(current) ? <Button green onClick={e => addToUserPubs(user, current)}>Add to My Publications</Button> : <Button disabled green>Added to Favorites</Button>
     return (
       <div>
         <Helmet>
@@ -53,7 +63,7 @@ class ViewPublication extends Component {
             <Link to={`/publications/${current.slug}/edit`}>
               <Button blue>Edit Publication Details</Button>
             </Link>
-            <Button green onClick={e => addToUserPubs(user, current)}>Add to My Publications</Button>
+            {AddButton}
           </React.Fragment>
         }
       <div>
@@ -67,8 +77,9 @@ class ViewPublication extends Component {
           Word Count (maximum): {current.wordCount || 'no info'}<br />
           Submission Fee: {current.fee ? `$${current.fee}` : 'no info'}<br />
           Payment Amount: {current.pay ? `$${current.pay}/${current.payType}` : 'no info'}<br />
-          Dates Open: {current.dateOpenMonth1 ? month[current.dateOpenMonth1-1] + ' ' + current.dateOpenDay1 + '—' + month[current.dateCloseMonth1-1] + ' ' + current.dateCloseDay1 : 'no info'}<br />
-          Average Response Time: {averageResponseTime(current.name) !== 'NaN days' ? averageResponseTime(current.name) : 'no info'}<br />
+          Dates Open: {current.alwaysOpen ? 'Always Open' : current.dateOpenMonth1 ? month[current.dateOpenMonth1-1] + ' ' + current.dateOpenDay1 + '—' + month[current.dateCloseMonth1-1] + ' ' + current.dateCloseDay1 : 'no info'}<br />
+        Average Response Time: {averageResponseTime() !== 'NaN days' ? averageResponseTime() : 'insufficient info'}<br />
+        Acceptance Rate: {acceptanceRate() !== 'NaN% (0/0)' ? acceptanceRate() : 'insufficient info'}<br />
         </div>
         <div className='col-md-6'>
           Genres: {current.genre || 'no info'}<br />

@@ -24,3 +24,13 @@ export function iterator (arr, field, comp, aggregator = 0) {
 export function pad(number, digits) {
     return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
 }
+
+export function findUpdatedItem(arr, obj, field) {
+  const result = arr.map(item => {
+    if (item[field] === obj[field]) {
+      return {...obj};
+    }
+    return item;
+  })
+  return result;
+}

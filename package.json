@@ -27,7 +27,11 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pug": "^2.0.3",
-    "react-scripts": "^1.1.5"
+    "react-autosuggest": "^9.4.2",
+    "react-scripts": "^1.1.5",
+    "react-table": "^6.8.6",
+    "react-toastify": "^4.4.3",
+    "stripe": "^6.15.2"
   },
   "devDependencies": {
     "autoprefixer": "^9.1.3",

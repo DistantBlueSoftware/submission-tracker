@@ -6,6 +6,7 @@ import moment from 'moment';
 import { Button } from './framework';
 import { pad, slugify, iterator } from './lib';
 import * as actions from './actions';
+import { toast } from 'react-toastify';
 
 const mapStateToProps = state => {
   return {...state};
@@ -15,11 +16,13 @@ class PublicationDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      alwaysOpen: false,
       dateOpenMonth1: '01',
       dateOpenDay1: 1,
       dateCloseMonth1: '01',
       dateCloseDay1: 1,
-      payType: 'work'
+      payType: 'work',
+      lastUpdatedBy: this.props.user ? this.props.user.username : ''
     }
   }
   handleChange = (e) => {
@@ -34,8 +37,12 @@ class PublicationDetail extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const { match } = this.props;
+    this.setState({
+      lastUpdatedBy: this.props.user ? this.props.user.username : '',
+      lastUpdatedDate: new Date()
+    })
     if (match && match.params && match.params.slug) {
-      this.props.updatePublication(this.state);
+      this.props.updatePublication(this.state, () => toast.success('Publication updated!'));
     } else {
       let pub = this.state;
       //generate slug; if identical slug exists, append a number
@@ -43,7 +50,7 @@ class PublicationDetail extends Component {
       const num = iterator(this.props.publications.all, 'slug', pub.slug);
       if (num !== 0) pub.slug = pub.slug + '-' + num;
 
-      this.props.newPublication(pub);
+      this.props.newPublication(pub, () => toast.success(`${pub.name} created!`));
     }
   }
 
@@ -57,6 +64,7 @@ class PublicationDetail extends Component {
     }
   }
   render() {
+    console.log(this.state)
     const {match, user, removePublication} = this.props;
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'].map((month, index) => <option key={index} value={pad(index+1, 2)}>{month}</option>)
     const days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31].map((day, index) => <option key={index} value={day}>{day}</option>)
@@ -84,19 +92,21 @@ class PublicationDetail extends Component {
           <input className='form-control' type='text' name='website' value={this.state.website} onChange={this.handleChange} />
         </div>
         <div className='row'>
-          <div className='col-md-1'>
+          <div className='col-md-2'>
             <div className='form-group'>
               <label htmlFor='wordCount'>Word Count Maximum</label>
               <input className='form-control' type='number' name='wordCount' value={this.state.wordCount} onChange={this.handleChange} />
             </div>
           </div>
-          <div className='col-md-1'>
+          <div className='col-md-2'>
             <div className='form-group'>
               <label htmlFor='fee'>Fee</label>
               <input className='form-control' type='number' name='fee' value={this.state.fee} onChange={this.handleChange} />
             </div>
           </div>
-          <div className='col-md-1'>
+          {!this.state.alwaysOpen && 
+            <React.Fragment>
+          <div className='col-md-2'>
             <div className='form-group'>
               <label htmlFor='dateOpenMonth1'>Open Date</label>
               <select className='form-control' name='dateOpenMonth1' value={this.state.dateOpenMonth1} onChange={this.handleChange}>
@@ -107,7 +117,7 @@ class PublicationDetail extends Component {
               </select>
             </div>
           </div>
-          <div className='col-md-1'>
+          <div className='col-md-2'>
             <div className='form-group'>
               <label htmlFor='dateCloseMonth1'>Close Date</label>
               <select className='form-control' name='dateCloseMonth1' value={this.state.dateCloseMonth1} onChange={this.handleChange}>
@@ -118,13 +128,22 @@ class PublicationDetail extends Component {
               </select>
             </div>
           </div>
-          <div className='col-md-1'>
+          </React.Fragment>
+          }
+          <div className='form-check'>
+            <input className='form-check-input' type='checkbox' id='alwaysOpen' name='alwaysOpen' checked={this.state.alwaysOpen} onChange={this.handleChange}/>
+            <label className='form-check-label' htmlFor='alwaysOpen'>
+              Always Open
+            </label>
+          </div>
+  
+          <div className='col-md-2'>
             <div className='form-group'>
               <label htmlFor='pay'>Payment Amount</label>
               <input className='form-control' type='number' name='pay' value={this.state.pay} onChange={this.handleChange} />
             </div>
           </div>
-          <div className='col-md-1'>
+          <div className='col-md-2'>
             <div className='form-group'>
               <label htmlFor='payType'>Payment Type</label>
                 <select className='form-control' name='payType' id='payType' value={this.state.payType} onChange={this.handleChange}>
@@ -144,7 +163,7 @@ class PublicationDetail extends Component {
       {!isNew &&
         <p style={{fontSize: '10px', marginTop: '10px'}}>last updated: {moment(this.state.lastUpdatedDate).format('dddd, MMMM Do YYYY, h:mm:ss A')} by {this.state.lastUpdatedBy}</p>
         }
-      {user && user.authenticated &&
+      {!isNew && user && user.authenticated && user.role === 1 &&
         <div style={{marginBottom: '10px'}}>
 
           <hr />

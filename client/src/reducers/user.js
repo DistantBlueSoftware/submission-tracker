@@ -12,7 +12,7 @@ export default function(state = INITIAL_STATE, action) {
     case USER_AUTH:
       return { ...state, ...action.payload, authenticated: true, errorMessage: '' };
     case USER_FAVORITE_PUBLICATION:
-      return { ...state, favorites: [...state.favorites, action.payload] };
+      return { ...state, ...action.payload, errorMessage: '' };
     case LOGOUT:
       return {};
     case PROFILE_ERROR:

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const emailService = require('./emailService');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const passport = require('passport');
 
@@ -18,6 +19,27 @@ const Piece = require('./models/Piece');
 router.post('/login', requireSignin, Authentication.signin);
 router.post('/register', Authentication.signup);
 
+const postStripeCharge = (res, user) => (stripeErr, stripeRes) => {
+  if (stripeErr) {
+    res.status(500).send({ error: stripeErr });
+  } else {
+    res.status(200).send({ success: stripeRes });
+  }
+}
+router.post('/save-stripe-token', function (req, res, next) {
+  const { token, amount, user } = req.body;
+  const convertedAmount = amount * 100;
+  if (!token) {
+    res.status(500).send({error: 'Error: payment info not valid or not provided.'});
+    return;
+  }
+  stripe.charges.create({
+    source: token.id, 
+    amount: convertedAmount, 
+    currency: 'usd',
+  }, postStripeCharge(res, user))
+});
+
 router.get('/publications', (req, res, next) => {
   Publication.find({})
     .then(pubs => {res.json(pubs)})
@@ -32,15 +54,32 @@ router.post('/publications', (req, res, next) => {
 });
 
 router.put('/publications/:id', (req, res, next) => {
-  Publication.findById(req.params.id)
+  Publication.findOne({slug: req.params.id})
     .exec()
     .then(pub => {
-      for (value in req.body) {
-        pub[value] = req.body[value];
-      };
-      pub.save()
-        .then(() => res.json(pub))
-        .catch(err => next(err));
+      if (pub) {
+        //don't try to update id
+        delete req.body._id;
+        for (value in req.body) {
+          pub[value] = req.body[value];
+        };
+        pub.save()
+          .then(() => res.json(pub))
+          .catch(err => next(err));
+      } else {
+          Publication.findById(req.params.id)
+          .exec()
+          .then(pub => {
+            for (value in req.body) {
+              pub[value] = req.body[value];
+            };
+            pub.save()
+              .then(() => res.json(pub))
+              .catch(err => next(err));
+          })
+          .catch(err => next(err));
+      }
+      
     })
     .catch(err => next(err));
 
@@ -69,11 +108,41 @@ router.get('/submissions', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.get('/submission/:id', (req, res, next) => {
+router.get('/submissions/:id', (req, res, next) => {
   Submission.findById(req.params.id)
     .exec()
     .then(sub => {res.json(sub)})
     .catch(err => next(err));
+});
+
+router.put('/submissions/:id', (req, res, next) => {
+  Submission.findOne({title: req.params.id})
+    .exec()
+    .then(sub => {
+      if (sub) {
+        for (value in req.body) {
+          sub[value] = req.body[value];
+        };
+        sub.save()
+          .then(() => res.json(sub))
+          .catch(err => next(err));
+      } else {
+          Submission.findById(req.params.id)
+          .exec()
+          .then(sub => {
+            for (value in req.body) {
+              sub[value] = req.body[value];
+            };
+            sub.save()
+              .then(() => res.json(sub))
+              .catch(err => next(err));
+          })
+          .catch(err => next(err));
+      }
+      
+    })
+    .catch(err => next(err));
+
 });
 
 router.post('/submissions', (req, res, next) => {
@@ -83,11 +152,11 @@ router.post('/submissions', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.put('/:user', (req, res, next) => {
+router.put('/:user/favorites', (req, res, next) => {
   User.findOne({username: req.params.user})
     .exec()
     .then(user => {
-      user.favorites && user.favorites.length ? user.favorites.push(req.body._id) : user.favorites = [req.body._id];
+      user.favorites.push(req.body._id || req.body.slug);
       user.save()
         .then(() => res.json(user))
         .catch(err => next(err));
