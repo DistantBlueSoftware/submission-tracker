@@ -49,7 +49,7 @@ class Home extends Component {
           {user.authenticated &&
             <React.Fragment>
               <Button blue onClick={() => history.push('/publications/new')}>New Publication</Button>
-              <Button green data-toggle='modal' data-target='#submission-modal'>New Submission</Button>
+              <Button green data-toggle='modal' data-target='#submission-modal' isNew={true}>New Submission</Button>
             </React.Fragment>
           }
           <PublicationsList />

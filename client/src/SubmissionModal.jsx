@@ -37,7 +37,7 @@ class SubmissionModal extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const isNew = this.props.submissions.current && this.props.submissions.current.length;
+    const isNew = this.props.isNew || (this.props.submissions.current && this.props.submissions.current.length);
     const sub = this.state;
     sub.user = this.props.user.username;
     if (isNew) {
@@ -64,7 +64,7 @@ class SubmissionModal extends Component {
   render () {
     const { submissions, publications } = this.props;
     const { current } = this.props;
-    const isNew = current && current.length;
+    const isNew = this.props.isNew || (current && current.length);
     return (
       <div className='modal fade' id='submission-modal' tabIndex='-1' role='dialog'>
         <div className='modal-dialog' role='document'>

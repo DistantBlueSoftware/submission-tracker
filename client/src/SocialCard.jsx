@@ -16,8 +16,8 @@ const buttonStyle = {
 
 export const SocialCard = ({link, facebook, twitter}) => (
   <div style={socialStyle}>
-    {link && <a href={link}><i className='fas fa-link' style={{color: '#449d44', ...buttonStyle}} />{link}</a>}
-    {facebook && <a href={facebook}><i className='fab fa-facebook' style={{color: '#356795', ...buttonStyle}} /></a>}
-    {twitter && <a href={twitter}><i className='fab fa-twitter' style={{color: '#4e8abe', ...buttonStyle}} /></a>}
+    {link && <a href={link} target='_blank'><i className='fas fa-link' style={{color: '#449d44', ...buttonStyle}} />{link}</a>}
+    {facebook && <a href={facebook} target='_blank'><i className='fab fa-facebook' style={{color: '#356795', ...buttonStyle}} /></a>}
+    {twitter && <a href={twitter} target='_blank'><i className='fab fa-twitter' style={{color: '#4e8abe', ...buttonStyle}} /></a>}
   </div>
 )
