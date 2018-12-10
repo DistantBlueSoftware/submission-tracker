@@ -7,7 +7,7 @@ import ReactTable from 'react-table';
 import SubmissionModal from './SubmissionModal';
 import * as actions from './actions';
 
-const inactiveStatuses = ['Withdrawn', 'Declined', 'Declined - Higher Tier', 'Declined - Personal'];
+const inactiveStatuses = ['Accepted', 'Withdrawn', 'Declined', 'Declined - Higher Tier', 'Declined - Personal'];
 
 class SubmissionsList extends Component {
   constructor(props) {

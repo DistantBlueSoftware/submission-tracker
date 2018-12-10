@@ -180,25 +180,5 @@ router.post('/new-user-email', (req, res, next) => {
       .catch(console.error);
     res.json({message: 'Message Sent'});
   });
-  
-router.get('/update-db', (req, res, next) => {
-  Publication.find({})
-    .then(pubs => {
-      pubs.forEach(pub => {
-        if (pub._id === undefined) {
-          const newPub = pub;
-          newPub.id = mongoose.Types.ObjectId();
-          newPub.save()
-          .then(res => console.log(res))
-          .catch(err => console.log(err));
-          Publication.findOneAndRemove({slug: pub.slug})
-            .then(res => console.log(res))
-            .catch(err => console.log(err))
-          // pub.remove();
-        }
-      })
-    })
-    .catch((err) => next(err));
-});
 
 module.exports = router;
