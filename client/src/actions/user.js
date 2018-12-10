@@ -1,5 +1,23 @@
 import axios from 'axios';
-import { USER_AUTH, LOGOUT, USER_FAVORITE_PUBLICATION, PROFILE_ERROR, AUTH_ERROR } from '../constants/actionTypes';
+import { PROCESS_PAYMENT, USER_AUTH, LOGOUT, USER_FAVORITE_PUBLICATION, PROFILE_ERROR, AUTH_ERROR } from '../constants/actionTypes';
+
+export const processPayment = (token, user, amount, callback) => async dispatch => {
+  try {
+    const response = await axios.post(
+      `/api/save-stripe-token`, {
+      token,
+      amount,
+      user: user.username
+    }
+    );
+    dispatch({ type: PROCESS_PAYMENT, payload: response.data });
+    callback();
+  } catch (e) {
+    const error = e.response && e.response.data ? e.response.data.error : 'Sorry, an error occurred and your payment could not be processed.';
+    alert(error);
+    dispatch({ type: PROFILE_ERROR, payload: error});
+  }
+}
 
 export const doRegister = (user, callback) => async dispatch => {
   try {
@@ -33,7 +51,7 @@ export const doLogin = (user, callback) => async dispatch => {
 export const addToUserPubs = (user, pub) => async dispatch => {
   try {
     const response = await axios.put(
-      `/api/${user.username}`,
+      `/api/${user.username}/favorites`,
       pub
     );
     dispatch({ type: USER_FAVORITE_PUBLICATION, payload: response.data });
@@ -42,8 +60,9 @@ export const addToUserPubs = (user, pub) => async dispatch => {
   }
 }
 
-export const doLogout = () => {
+export const doLogout = callback => {
   localStorage.removeItem('token');
+  callback();
   return {
     type: LOGOUT,
     payload: ''

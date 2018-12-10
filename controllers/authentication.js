@@ -10,12 +10,12 @@ function tokenForUser(user) {
 exports.signin = function(req, res, next) {
   // User has already had their email and password auth'd
   // We just need to give them a token
-  const { username, email, name } = req.user;
-  res.send({ username, email, name, token: tokenForUser(req.user) });
+  const { username, email, name, favorites, role } = req.user;
+  res.send({ username, email, name, favorites, role, token: tokenForUser(req.user) });
 }
 
 exports.signup = function(req, res, next) {
-  const { email, password, username, name } = req.body;
+  const { email, password, username, name, favorites = [], role = 0 } = req.body;
 
   if (!email || !password) {
     return res.status(422).send({ error: 'You must provide email and password'});
@@ -32,17 +32,19 @@ exports.signup = function(req, res, next) {
 
     // If a user with email does NOT exist, create and save user record
     const user = new User({
-      email: email,
-      password: password,
-      username: username,
-      name: name
+      email,
+      password,
+      username,
+      name,
+      favorites,
+      role
     });
     user.save(function(err) {
       if (err) { return next(err); }
 
 
       // Repond to request indicating the user was created
-      res.json({ email: email, username: username, name: name, token: tokenForUser(user) });
+      res.json({ email, username, name, favorites, role, token: tokenForUser(user) });
     });
   });
 }

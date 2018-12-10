@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
+import {Button} from './framework';
 import * as actions from './actions';
 
 class Login extends Component {
@@ -48,7 +49,7 @@ class Login extends Component {
             <label htmlFor='password'>Password: </label>
             <input className='form-control' type='password' name='password' id='password' onChange={this.handleChange} />
           </div>
-          <button type='submit' className='btn btn-primary'>Login</button>
+          <Button blue type='submit'>Login</Button>
         </form>
       </div>
     )

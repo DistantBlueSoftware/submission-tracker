@@ -19,6 +19,7 @@ const PublicationSchema = new mongoose.Schema({
   dateOpenDay2: Number,
   dateCloseMonth2: String,
   dateCloseDay2: Number,
+  alwaysOpen: Boolean,
   fee: Number,
   pay: Number,
   payType: String

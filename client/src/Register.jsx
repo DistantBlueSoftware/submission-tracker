@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import * as actions from './actions';
+import {Button} from './framework';
 
 class Register extends Component {
   constructor(props) {
@@ -51,7 +52,7 @@ class Register extends Component {
             <label htmlFor='password'>Password: </label>
             <input className='form-control' type='password' name='password' id='password' onChange={this.handleChange} />
           </div>
-          <button type='submit' className='btn btn-primary'>Register</button>
+          <Button blue type='submit'>Register</Button>
         </form>
       </div>
     )

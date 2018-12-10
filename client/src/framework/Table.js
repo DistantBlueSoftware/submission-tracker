@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 
 export const Table = styled.table`
-  min-width: 60%;
+  min-width: 100%;
   thead {
     background: #f8f8f8;
   }

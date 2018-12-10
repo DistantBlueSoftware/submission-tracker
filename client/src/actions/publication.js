@@ -37,22 +37,26 @@ export const openPublication = pub => async dispatch => {
   }
 }
 
-export const newPublication = pub => async dispatch => {
+export const newPublication = (pub, callback) => async dispatch => {
   try {
     const response = await axios.post(`/api/publications`, pub);
     const data = response.length ? response : response.data;
     dispatch ({ type: NEW_PUBLICATION, payload: data });
-    dispatch(push(`/publications/${data.slug}`))
+    dispatch(push(`/publications/${data.slug}`));
+    callback();
   } catch (e) {
     dispatch({ type: PUBLICATION_ERROR, payload: 'Something went wrong and we couldn\'t create the publication. Please try again.'});
   }
 }
 
-export const updatePublication = pub => async dispatch => {
+export const updatePublication = (pub, callback) => async dispatch => {
   try {
-    const response = await axios.put(`/api/publications/${pub._id}`, pub);
+    const id = pub._id || pub.slug;
+    console.log(id)
+    const response = await axios.put(`/api/publications/${id}`, pub);
     const data = response.length ? response : response.data;
     dispatch ({ type: UPDATE_PUBLICATION, payload: data });
+    callback();
   } catch (e) {
     dispatch({ type: PUBLICATION_ERROR, payload: 'Something went wrong and we couldn\'t update the publication. Please try again.'});
   }
