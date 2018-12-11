@@ -10,6 +10,7 @@ import rootReducer from '../reducers';
 const persistConfig = {
   key: 'root',
   storage,
+  whitelist: ['user']
 }
 
 export const history = createBrowserHistory();

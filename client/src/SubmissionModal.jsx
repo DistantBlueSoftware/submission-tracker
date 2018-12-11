@@ -5,6 +5,7 @@ import moment from 'moment';
 import { Button } from './framework';
 import * as actions from './actions';
 import { toast } from 'react-toastify';
+import _ from 'underscore';
 
 const mapStateToProps = state => {
   return {...state};
@@ -37,7 +38,7 @@ class SubmissionModal extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const isNew = this.props.isNew || (this.props.submissions.current && this.props.submissions.current.length);
+    const isNew = this.props.isNew ? this.props.isNew : (_.isEmpty(this.props.submissions.current));
     const sub = this.state;
     sub.user = this.props.user.username;
     if (isNew) {
@@ -64,7 +65,9 @@ class SubmissionModal extends Component {
   render () {
     const { submissions, publications } = this.props;
     const { current } = this.props;
-    const isNew = this.props.isNew || (current && current.length);
+    const isNew = this.props.isNew ? this.props.isNew : _.isEmpty(current);
+    console.log(this.props.isNew)
+    console.log(_.isEmpty(current))
     return (
       <div className='modal fade' id='submission-modal' tabIndex='-1' role='dialog'>
         <div className='modal-dialog' role='document'>
