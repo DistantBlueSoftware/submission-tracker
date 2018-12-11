@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PublicationAutosuggest from './PublicationAutosuggest';
+import PieceAutosuggest from './PieceAutosuggest';
 import moment from 'moment';
 import { Button } from './framework';
 import * as actions from './actions';
@@ -63,7 +64,7 @@ class SubmissionModal extends Component {
   }
   
   render () {
-    const { submissions, publications } = this.props;
+    const { submissions, publications, pieces } = this.props;
     const { current } = this.props;
     const isNew = this.props.isNew ? this.props.isNew : _.isEmpty(current);
     console.log(this.props.isNew)
@@ -81,7 +82,8 @@ class SubmissionModal extends Component {
                 <div className='col-md-12'>
                 <div className='form-group'>
                   <label htmlFor='title'>Title of Submission:</label>
-                  <input className='form-control' type='text' name='title' placeholder='Enter title' value={this.state.title} onChange={this.handleChange}></input>
+                  <PieceAutosuggest pieces={pieces} value={this.state.title ? this.state.title : ''} handleChange={this.handleChange} />
+                  /*<input className='form-control' type='text' name='title' placeholder='Enter title' value={this.state.title} onChange={this.handleChange}></input>*/
                 </div>
                 </div>
                 <div className='col-md-12'>

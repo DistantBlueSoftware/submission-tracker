@@ -13,9 +13,10 @@ const mapStateToProps = state => {
 class Dashboard extends Component {
   componentDidMount() {
     if (!this.props.submissions.all.length) this.props.getSubmissions();
+    if (!this.props.pieces.all.length) this.props.getUserPieces();
   }
   render() {
-    const {submissions, publications, user} = this.props;
+    const {submissions, publications, user, pieces} = this.props;
     const userSubs = submissions.all.filter(sub => sub.user === user.username);
     const getNameForFave = fave => {
       let href;
@@ -31,6 +32,11 @@ class Dashboard extends Component {
         <link rel='canonical' href='https://submissionmanager.phrasemagazine.com/dashboard' />
         </Helmet>
         <h1>dashboard - {user.name}</h1>
+        <h2>My Pieces</h2>
+        {pieces.all.length > 0 ?
+          pieces.all.map(piece => <p>{piece.title}</p>) : 
+          <p>No Pieces Tracked Yet -- why not make one?</p>
+        }
         <h2>Submissions</h2>
         {userSubs.length > 0 ? <SubmissionsList subs={userSubs} /> : 'No submissions yet. Get going!'}
         <h2>Favorite Publications</h2>
