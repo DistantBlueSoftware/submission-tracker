@@ -159,6 +159,13 @@ router.get('/pieces/:userid', (req, res, next) => {
     .catch((err) => next(err));
 });
 
+router.post('/pieces', (req, res, next) => {
+  const piece = new Piece({...req.body});
+  piece.save()
+    .then(piece => {res.json(piece)})
+    .catch((err) => next(err));
+});
+
 router.put('/:user/favorites', (req, res, next) => {
   User.findOne({username: req.params.user})
     .exec()

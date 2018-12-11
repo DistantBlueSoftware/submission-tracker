@@ -42,11 +42,22 @@ class SubmissionModal extends Component {
     const isNew = this.props.isNew ? this.props.isNew : (_.isEmpty(this.props.submissions.current));
     const sub = this.state;
     sub.user = this.props.user.username;
+    this.newPieceCheck(sub.title, sub.wordCount);
     if (isNew) {
-      this.props.newSubmission(sub, () => toast.success("Submission created!"));
+      this.props.newSubmission(sub, () => {
+        toast.success("Submission created!");
+      });
     } else {
-      this.props.updateSubmission(sub, () => toast.success('Submission updated'));
+      this.props.updateSubmission(sub, () => {
+        toast.success('Submission updated');
+      });
     }
+  }
+  
+  newPieceCheck = (title, wordCount) => {
+    if (~this.props.pieces.map(p => p.title).indexOf(sub.title))
+    if (confirm(`${sub.title} is not currently in your tracked pieces. Add it?`))
+      this.props.newPiece({title, wordCount, user: this.props.user._id});
   }
   
   componentDidMount() {

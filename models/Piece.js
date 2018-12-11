@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 const PieceSchema = new mongoose.Schema({
-  author: {type: String},
+  user: {type: String},
   title: {type: String},
-  wordCount: {type: Number}
+  wordCount: {type: Number},
+  dateCreated: {type: Date, default: new Date()}
 });
 
 module.exports = mongoose.model('Piece', PieceSchema);
