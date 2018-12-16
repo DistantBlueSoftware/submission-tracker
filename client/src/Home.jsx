@@ -19,8 +19,7 @@ class Home extends Component {
     }
   }
   componentDidMount() {
-    this.props.getPublications();
-    this.props.getSubmissions();
+  
   }
   render() {
     if (!this.props.publications.all.length) {

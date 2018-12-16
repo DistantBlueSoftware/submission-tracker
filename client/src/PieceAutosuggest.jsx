@@ -17,10 +17,6 @@ export default class PieceAutosuggest extends Component {
   getSuggestions = (value) => {
     const escapedValue = this.escapeRegexCharacters(value.trim());
 
-    if (escapedValue === '' || escapedValue.length < 3) {
-      return [];
-    }
-
     const regex = new RegExp(escapedValue, 'i');
     return this.props.pieces.all.filter(piece => regex.test(piece.title));
   }
@@ -53,8 +49,12 @@ export default class PieceAutosuggest extends Component {
     });
   };
   
+  shouldRenderSuggestions = () => {
+    return true;
+  }
+  
   onSuggestionSelected = (event, { suggestion }) => {
-    this.props.handleChange(event, suggestion.title)
+    this.props.handleSuggestion(suggestion)
   };
 
   onSuggestionsFetchRequested = ({ value }) => {
@@ -126,6 +126,7 @@ export default class PieceAutosuggest extends Component {
         onSuggestionsClearRequested={this.onSuggestionsClearRequested}
         onSuggestionSelected={this.onSuggestionSelected}
         getSuggestionValue={this.getSuggestionValue}
+        shouldRenderSuggestions={this.shouldRenderSuggestions}
         renderSuggestion={this.renderSuggestion}
         inputProps={inputProps}
         theme={theme} />

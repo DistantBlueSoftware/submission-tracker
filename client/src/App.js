@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { history } from './store';
+import { connect } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import { Switch, Route } from 'react-router-dom';
 import Navigation from './Navigation';
@@ -15,8 +16,19 @@ import Register from './Register';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import "react-table/react-table.css";
+import * as actions from './actions'
+
+const mapStateToProps = state => {
+  return {...state};
+}
 
 class App extends Component {
+  componentDidMount() {
+    this.props.getPublications();
+    this.props.getSubmissions();
+    if (!this.props.submissions.all.length) this.props.getSubmissions();
+    if (this.props.user.username && !this.props.pieces.all.length) this.props.getUserPieces(this.props.user);
+  }
   render() {
     return (
       <div>
@@ -45,4 +57,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect (mapStateToProps, actions)(App);

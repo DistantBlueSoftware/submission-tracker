@@ -20,6 +20,13 @@ class SubmissionModal extends Component {
       dateSubmitted: moment().format('YYYY-MM-DD'),
     }
   }
+  
+  handleSuggestion = suggestion => {
+    this.setState({
+      title: suggestion.title,
+      wordCount: suggestion.wordCount
+    })
+  }
 
   handleChange = (e, explicitValue) => {
     if (explicitValue) {
@@ -40,7 +47,7 @@ class SubmissionModal extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const isNew = this.props.isNew ? this.props.isNew : (_.isEmpty(this.props.submissions.current));
-    const {sub} = this.state;
+    const sub = {...this.state};
     sub.user = this.props.user.username;
     this.newPieceCheck(sub.title, sub.wordCount);
     if (isNew) {
@@ -55,9 +62,10 @@ class SubmissionModal extends Component {
   }
   
   newPieceCheck = (title, wordCount) => {
-    if (~this.props.pieces.map(p => p.title).indexOf(title)) {
+    const pieces = this.props.pieces.all.map(p => p.title);
+    if (!~pieces.indexOf(title)) {
       // if (confirm(`${title} is not currently in your tracked pieces. Add it?`))
-        this.props.newPiece({title, wordCount, user: this.props.user._id});
+        this.props.newPiece({title, wordCount, user: this.props.user.id});
       }
   }
   
@@ -93,9 +101,10 @@ class SubmissionModal extends Component {
               <div className='row'>
                 <div className='col-md-12'>
                 <div className='form-group'>
-                  <label htmlFor='title'>Title of Submission:</label>
-                  <PieceAutosuggest pieces={pieces} value={this.state.title ? this.state.title : ''} handleChange={this.handleChange} />
-                  /*<input className='form-control' type='text' name='title' placeholder='Enter title' value={this.state.title} onChange={this.handleChange}></input>*/
+                  <PieceAutosuggest pieces={pieces} value={this.state.title ? this.state.title : ''} handleSuggestion={this.handleSuggestion} handleChange={this.handleChange} />
+                  {/*
+                    <label htmlFor='title'>Title of Submission:</label>
+                    <input className='form-control' type='text' name='title' placeholder='Enter title' value={this.state.title} onChange={this.handleChange}></input>*/}
                 </div>
                 </div>
                 <div className='col-md-12'>

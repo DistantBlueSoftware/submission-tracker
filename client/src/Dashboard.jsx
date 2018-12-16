@@ -12,8 +12,7 @@ const mapStateToProps = state => {
 
 class Dashboard extends Component {
   componentDidMount() {
-    if (!this.props.submissions.all.length) this.props.getSubmissions();
-    if (!this.props.pieces.all.length) this.props.getUserPieces();
+    
   }
   render() {
     const {submissions, publications, user, pieces} = this.props;
