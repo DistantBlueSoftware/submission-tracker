@@ -16,10 +16,19 @@ const mapStateToProps = state => {
 class ViewPublication extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      addButton: 'Add to My Publications'
+    }
   }
   
   isFavorite = pub => {
-    return ~this.props.user.favorites.indexOf(pub._id) && ~this.props.user.favorites.indexOf(pub.slug) ? false : true;
+    if (this.props.user && this.props.user.favorites.length)
+      return ~this.props.user.favorites.indexOf(pub._id) || ~this.props.user.favorites.indexOf(pub.slug);
+  }
+  
+  addFavorite = (user, pub) => {
+    this.props.addToUserPubs(user, pub);
+    this.setState({addButton: 'Added!'})
   }
   
   componentDidMount = async () => {
@@ -28,7 +37,7 @@ class ViewPublication extends Component {
   }
   
   render() {
-    const {match, publications, submissions, user, addToUserPubs} = this.props;
+    const {match, publications, submissions, user} = this.props;
     const { all: allSubmissions } = submissions;
     const userSubs = allSubmissions.filter(sub => sub.user === user.username);
     const { current } = publications;
@@ -50,7 +59,7 @@ class ViewPublication extends Component {
       return ((acceptances / count) * 100).toFixed(2) + '%' + ` (${acceptances}/${count})`;
     }
     const userSubsToPub = userSubs.filter(sub => sub.publication === current.name).map((sub, index) => <tr key={index}><td>{sub.title}</td><td>{moment(sub.dateSubmitted).format('MM/DD/YYYY')}</td><td>{sub.status}</td></tr>)
-    const AddButton = user && user.favorites && !this.isFavorite(current) ? <Button green onClick={e => addToUserPubs(user, current)}>Add to My Publications</Button> : <Button disabled green>Added to Favorites</Button>
+    const AddButton = this.isFavorite(current) ? <Button disabled green>Added to Favorites</Button> : <Button green onClick={e => this.addFavorite(user, current)}>{this.state.addButton}</Button>
     return (
       <div>
         <Helmet>
