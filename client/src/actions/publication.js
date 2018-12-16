@@ -29,7 +29,6 @@ export const openPublication = pub => async dispatch => {
     const param = pub._id ? pub._id : pub.slug;
     const response = await axios.get(`/api/publications/${param}`);
     const data = response.length ? response : response.data;
-    console.log(data)
     dispatch ({ type: OPEN_PUBLICATION, payload: data });
     dispatch(push(`/publications/${pub.slug}`))
   } catch (e) {

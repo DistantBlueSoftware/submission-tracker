@@ -40,7 +40,7 @@ class SubmissionModal extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const isNew = this.props.isNew ? this.props.isNew : (_.isEmpty(this.props.submissions.current));
-    const sub = this.state;
+    const {sub} = this.state;
     sub.user = this.props.user.username;
     this.newPieceCheck(sub.title, sub.wordCount);
     if (isNew) {
@@ -55,9 +55,10 @@ class SubmissionModal extends Component {
   }
   
   newPieceCheck = (title, wordCount) => {
-    if (~this.props.pieces.map(p => p.title).indexOf(sub.title))
-    if (confirm(`${sub.title} is not currently in your tracked pieces. Add it?`))
-      this.props.newPiece({title, wordCount, user: this.props.user._id});
+    if (~this.props.pieces.map(p => p.title).indexOf(title)) {
+      // if (confirm(`${title} is not currently in your tracked pieces. Add it?`))
+        this.props.newPiece({title, wordCount, user: this.props.user._id});
+      }
   }
   
   componentDidMount() {
