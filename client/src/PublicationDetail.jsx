@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
-// import GenreAutosuggest from './GenreAutosuggest';
+import GenreAutosuggest from './GenreAutosuggest';
 import moment from 'moment';
+import { AddNewButton } from './AddNewButton';
 import { Button } from './framework';
 import { pad, slugify, iterator } from './lib';
 import * as actions from './actions';
@@ -12,19 +13,60 @@ const mapStateToProps = state => {
   return {...state};
 }
 
+const months = ['January','February','March','April','May','June','July','August','September','October','November','December'].map((month, index) => <option key={index} value={pad(index+1, 2)}>{month}</option>)
+const days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31].map((day, index) => <option key={index} value={day}>{day}</option>)
+
+let currentNum = 1;
+
+class DateRange extends Component {
+  render() {
+    const {num, parentState, handleChange} = this.props;
+    return (
+      <React.Fragment>
+        <div className='col-md-2'>
+          <div className='form-group'>
+            <label htmlFor={`dateOpenMonth${num}`}>Open Date</label>
+            <select className='form-control' name={`dateOpenMonth${num}`} value={parentState[`dateOpenMonth${num}`]} onChange={handleChange}>
+              {months}
+            </select>
+            <select className='form-control' name={`dateOpenDay${num}`} value={parentState[`dateOpenDay${num}`]} onChange={handleChange}>
+              {days}
+            </select>
+          </div>
+        </div>
+        <div className='col-md-2'>
+          <div className='form-group'>
+            <label htmlFor={`dateCloseMonth${num}`}>Close Date</label>
+            <select className='form-control' name={`dateCloseMonth${num}`} value={parentState[`dateCloseMonth${num}`]} onChange={handleChange}>
+              {months}
+            </select>
+            <select className='form-control' name={`dateCloseDay${num}`} value={parentState[`dateCloseDay${num}`]} onChange={handleChange}>
+              {days}
+            </select>
+          </div>
+        </div>
+      </React.Fragment>
+    )
+  }
+}
+
 class PublicationDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      num: 1,
+      dateRanges: [1],
       alwaysOpen: false,
       dateOpenMonth1: '01',
       dateOpenDay1: 1,
       dateCloseMonth1: '01',
       dateCloseDay1: 1,
       payType: 'work',
+      genre: [],
       lastUpdatedBy: this.props.user ? this.props.user.username : ''
     }
   }
+  
   handleChange = (e) => {
     const target = e.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -33,19 +75,41 @@ class PublicationDetail extends Component {
       [name]: value
     });
   }
+  
+  handleSuggestion = suggestion => {
+    let { genre } = this.state;
+    genre.push(suggestion);
+    this.setState({
+      genre
+    })
+  }
 
   handleSubmit = (e) => {
     e.preventDefault();
     const { match } = this.props;
+    let openDates = [];
+    for (let i = 1; i <= this.state.num; i++) {
+      openDates.push({
+        openMonth: this.state[`dateOpenMonth${i}`],
+        openDay: this.state[`dateOpenDay${i}`],
+        closeMonth: this.state[`dateCloseMonth${i}`],
+        closeDay: this.state[`dateCloseDay${i}`]
+      })
+    }
+    console.log(openDates)
     this.setState({
       lastUpdatedBy: this.props.user ? this.props.user.username : '',
-      lastUpdatedDate: new Date()
+      lastUpdatedDate: new Date(),
+      openDates
     })
     if (match && match.params && match.params.slug) {
+      let pub = this.state;
+      delete pub.num;
       this.props.updatePublication(this.state, () => toast.success('Publication updated!'));
     } else {
       let pub = this.state;
       //generate slug; if identical slug exists, append a number
+      delete pub.num;
       pub.slug = slugify(pub.name);
       const num = iterator(this.props.publications.all, 'slug', pub.slug);
       if (num !== 0) pub.slug = pub.slug + '-' + num;
@@ -53,26 +117,60 @@ class PublicationDetail extends Component {
       this.props.newPublication(pub, () => toast.success(`${pub.name} created!`));
     }
   }
-
-  componentDidMount() {
-    const { match, publications } = this.props;
-    const isNew = match.params && match.params.slug ? false : true;
-    if (!isNew) {
+  
+  addNewDateRange = () => {
+    const newNum = this.state.num + 1;
+    if (newNum < 7) {
+      let result = this.state.dateRanges;
+      for (let i = result.length; i < newNum; i++) {
+        result.push(i);
+      }
       this.setState({
-        ...publications.current
+        num: newNum,
+        dateRanges: result
       })
     }
   }
+  
+  transposeDateInfo = (pub) => {
+    let transposedDates = {};
+    if (pub && pub.openDates) {
+      for (let i in pub.openDates) {
+        transposedDates[`dateOpenMonth${i+1}`] = pub.openDates[i].openMonth;
+        transposedDates[`dateOpenDay${i+1}`] = pub.openDates[i].openDay;
+        transposedDates[`dateCloseMonth${i+1}`] = pub.openDates[i].closeMonth;
+        transposedDates[`dateCloseDay${i+1}`] = pub.openDates[i].closeDay;
+      }
+      this.setState({
+        ...transposedDates,
+        num: pub.openDates.length
+      })
+    }
+  }
+
+  componentDidMount = async () => {
+    const { match, publications } = this.props;
+    const isNew = match.params && !match.params.slug;
+    let current;
+    if (!isNew) {
+      if (!publications.current.name) {
+        current = await this.props.findPublication(match.params.slug);
+      } else current = publications.current;
+      this.setState({
+        ...current
+      })
+      this.transposeDateInfo(current);
+    }
+  }
   render() {
-    console.log(this.state)
+    // console.log(this.state)
     const {match, user, removePublication} = this.props;
-    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'].map((month, index) => <option key={index} value={pad(index+1, 2)}>{month}</option>)
-    const days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31].map((day, index) => <option key={index} value={day}>{day}</option>)
     const genres = ['Fiction', 'Nonfiction', 'Poetry', 'Flash Fiction', 'Reviews', 'Translation', 'Art', 'Sound', 'Comics', 'Dance', 'Hybrid']
     const isNew = match.params && match.params.slug ? false : true;
     const pageTitle = this.state.name ? this.state.name : 'New Publication';
+    const genreInfo = this.state.genre ? this.state.genre.join(',') : null;
     return (
-    <div>
+    <div className='container-fluid'>
       <Helmet>
         <meta charSet='utf-8' />
         <title>{`${pageTitle} - Submission Manager - Home`}</title>
@@ -104,39 +202,21 @@ class PublicationDetail extends Component {
               <input className='form-control' type='number' name='fee' value={this.state.fee} onChange={this.handleChange} />
             </div>
           </div>
-          {!this.state.alwaysOpen && 
-            <React.Fragment>
-          <div className='col-md-2'>
-            <div className='form-group'>
-              <label htmlFor='dateOpenMonth1'>Open Date</label>
-              <select className='form-control' name='dateOpenMonth1' value={this.state.dateOpenMonth1} onChange={this.handleChange}>
-                {months}
-              </select>
-              <select className='form-control' name='dateOpenDay1' value={this.state.dateOpenDay1} onChange={this.handleChange}>
-                {days}
-              </select>
+          <div className='col-md-12' style={{display: 'flex', flexFlow: 'row wrap', alignItems: 'center', padding: '10px', border: '1px solid #0E5582', borderRadius: '5px'}}>
+            <h4>Reading Periods</h4>
+            {!this.state.alwaysOpen && 
+              <React.Fragment>
+                {this.state.dateRanges.map((item, index) => <DateRange num={index+1} parentState={this.state} handleChange={this.handleChange} />)}
+                <AddNewButton action={this.addNewDateRange} />
+              </React.Fragment>
+            }
+            <div className='form-check'>
+              <input className='form-check-input' type='checkbox' id='alwaysOpen' name='alwaysOpen' checked={this.state.alwaysOpen} onChange={this.handleChange}/>
+              <label className='form-check-label' htmlFor='alwaysOpen'>
+                Always Open
+              </label>
             </div>
           </div>
-          <div className='col-md-2'>
-            <div className='form-group'>
-              <label htmlFor='dateCloseMonth1'>Close Date</label>
-              <select className='form-control' name='dateCloseMonth1' value={this.state.dateCloseMonth1} onChange={this.handleChange}>
-                {months}
-              </select>
-              <select className='form-control' name='dateCloseDay1' value={this.state.dateCloseDay1} onChange={this.handleChange}>
-                {days}
-              </select>
-            </div>
-          </div>
-          </React.Fragment>
-          }
-          <div className='form-check'>
-            <input className='form-check-input' type='checkbox' id='alwaysOpen' name='alwaysOpen' checked={this.state.alwaysOpen} onChange={this.handleChange}/>
-            <label className='form-check-label' htmlFor='alwaysOpen'>
-              Always Open
-            </label>
-          </div>
-  
           <div className='col-md-2'>
             <div className='form-group'>
               <label htmlFor='pay'>Payment Amount</label>
@@ -149,13 +229,14 @@ class PublicationDetail extends Component {
                 <select className='form-control' name='payType' id='payType' value={this.state.payType} onChange={this.handleChange}>
                   <option value='work'>per work</option>
                   <option value='page'>per page</option>
+                  <option value='word'>per word</option>
                 </select>
             </div>
           </div>
         </div>
         <div className='row'>
           <div className='col-md-12'>
-              {/*<GenreAutosuggest genres={genres} value={this.state.genre} onChange={this.handleChange} />*/}
+              <GenreAutosuggest genres={genres} value={genreInfo} handleChange={this.handleChange} handleSuggestion={this.handleSuggestion} />
           </div>
         </div>
         <Button green type='submit'>{isNew ? 'Add New' : 'Update'}</Button>

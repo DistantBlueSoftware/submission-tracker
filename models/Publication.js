@@ -15,10 +15,12 @@ const PublicationSchema = new mongoose.Schema({
   dateOpenDay1: Number,
   dateCloseMonth1: String,
   dateCloseDay1: Number,
-  dateOpenMonth2: String,
-  dateOpenDay2: Number,
-  dateCloseMonth2: String,
-  dateCloseDay2: Number,
+  openDates: [{
+    openMonth: String,
+    openDay: Number,
+    closeMonth: String,
+    closeDay: Number
+  }],
   alwaysOpen: Boolean,
   fee: Number,
   pay: Number,

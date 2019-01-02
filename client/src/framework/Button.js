@@ -6,7 +6,9 @@ const theme = {
   green: '#5fb760',
   darkgreen: '#478947',
   red: '#d33b3e',
-  darkred: '#a02b2d'
+  darkred: '#a02b2d',
+  white: '#fff',
+  offwhite: '#fdfff2'
 }
 
 export const Button = styled.button`
@@ -41,6 +43,14 @@ export const Button = styled.button`
     &:hover {
       background: ${theme.darkred};
       color: white;
+    }
+  `};
+  ${props => props.white && css`
+    border: 2px solid ${theme.white};
+    color: ${theme.white};
+    &:hover {
+      background: ${theme.offwhite};
+      color: black;
     }
   `};
   ${props => props.blue && props.active && css`

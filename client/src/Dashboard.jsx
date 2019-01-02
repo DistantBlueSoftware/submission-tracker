@@ -24,7 +24,7 @@ class Dashboard extends Component {
       if (result && href) return <Link to={href}><li>{result.name}</li></Link>
     }
     return (
-      <div>
+      <div className='container-fluid'>
         <Helmet>
         <meta charSet='utf-8' />
         <title>Submission Manager - User Dashboard</title>

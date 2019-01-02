@@ -35,7 +35,7 @@ class App extends Component {
         <ConnectedRouter history={history}>
           <React.Fragment>
             <Navigation />
-            <div className='container-fluid'>
+            <div>
               <Switch>
                 <Route exact path='/' component={Home} />
                 <Route exact path='/about' component={About} />

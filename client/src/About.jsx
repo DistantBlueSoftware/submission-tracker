@@ -31,7 +31,7 @@ export default class About extends Component {
         </Helmet>
         <div className='container-fluid' style={{minHeight: '75vh'}}>
           <h1>About</h1>
-          <p>This tool was developed by the PHRASE Magazine team. We are writers and submitters, and 
+          <p>This tool was developed by writers and artists and submitters who felt that 
             the process of finding markets and then submitting to them was getting byzantine. We would 
             be cross-referencing spreadsheets trying to remember if we sent this piece to this or that journal, 
             if enough time had elapsed that we could send another, if this was one of the paying 

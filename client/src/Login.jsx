@@ -33,7 +33,7 @@ class Login extends Component {
   render() {
     const {errorMessage} = this.props;
     return (
-      <div className='Login'>
+      <div className='Login container-fluid'>
         <Helmet>
         <meta charSet='utf-8' />
         <title>Login - Submission Manager</title>

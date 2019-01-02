@@ -13,11 +13,12 @@ export const getPublications = () => async dispatch => {
     }
 }
 
-export const findPublication = slug => async dispatch => {
+export const findPublication = (slug, callback) => async dispatch => {
     try {
       const response = await axios.get(`/api/publications/${slug}`);
       const data = response.length ? response : response.data;
       dispatch ({ type: OPEN_PUBLICATION, payload: data });
+      callback && callback();
     } catch (e) {
       console.log(e)
       dispatch({ type: PUBLICATION_ERROR, payload: 'Sorry, we couldn\t complete this request right now. Please try again.'});

@@ -31,6 +31,10 @@ class ViewPublication extends Component {
     this.setState({addButton: 'Added!'})
   }
   
+  getDateInfo = () => {
+    return 'no info';
+  }
+  
   componentDidMount = async () => {
     const {slug} = this.props.match.params;
     const current = await this.props.findPublication(slug);
@@ -61,7 +65,7 @@ class ViewPublication extends Component {
     const userSubsToPub = userSubs.filter(sub => sub.publication === current.name).map((sub, index) => <tr key={index}><td>{sub.title}</td><td>{moment(sub.dateSubmitted).format('MM/DD/YYYY')}</td><td>{sub.status}</td></tr>)
     const AddButton = this.isFavorite(current) ? <Button disabled green>Added to Favorites</Button> : <Button green onClick={e => this.addFavorite(user, current)}>{this.state.addButton}</Button>
     return (
-      <div>
+      <div className='container-fluid'>
         <Helmet>
           <meta charSet='utf-8' />
           <title>{current.name || 'Publication'} - Submission Manager - Home</title>
@@ -86,9 +90,9 @@ class ViewPublication extends Component {
           Word Count (maximum): {current.wordCount || 'no info'}<br />
           Submission Fee: {current.fee ? `$${current.fee}` : 'no info'}<br />
           Payment Amount: {current.pay ? `$${current.pay}/${current.payType}` : 'no info'}<br />
-          Dates Open: {current.alwaysOpen ? 'Always Open' : current.dateOpenMonth1 ? month[current.dateOpenMonth1-1] + ' ' + current.dateOpenDay1 + '—' + month[current.dateCloseMonth1-1] + ' ' + current.dateCloseDay1 : 'no info'}<br />
-        Average Response Time: {averageResponseTime() !== 'NaN days' ? averageResponseTime() : 'insufficient info'}<br />
-        Acceptance Rate: {acceptanceRate() !== 'NaN% (0/0)' ? acceptanceRate() : 'insufficient info'}<br />
+          Dates Open: {current.alwaysOpen ? 'Always Open' : current.dateOpenMonth1 ? month[current.dateOpenMonth1-1] + ' ' + current.dateOpenDay1 + '—' + month[current.dateCloseMonth1-1] + ' ' + current.dateCloseDay1 : this.getDateInfo()}<br />
+          Average Response Time: {averageResponseTime() !== 'NaN days' ? averageResponseTime() : 'insufficient info'}<br />
+          Acceptance Rate: {acceptanceRate() !== 'NaN% (0/0)' ? acceptanceRate() : 'insufficient info'}<br />
         </div>
         <div className='col-md-6'>
           Genres: {current.genre || 'no info'}<br />

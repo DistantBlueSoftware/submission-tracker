@@ -28,7 +28,7 @@ class Register extends Component {
   render() {
     const {errorMessage} = this.props;
     return (
-      <div>
+      <div className='container-fluid'>
         <Helmet>
         <meta charSet='utf-8' />
         <title>Register - Submission Manager</title>

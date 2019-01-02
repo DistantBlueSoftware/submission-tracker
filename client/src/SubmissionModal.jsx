@@ -85,10 +85,8 @@ class SubmissionModal extends Component {
   
   render () {
     const { submissions, publications, pieces } = this.props;
-    const { current } = this.props;
+    const { current } = submissions;
     const isNew = this.props.isNew ? this.props.isNew : _.isEmpty(current);
-    console.log(this.props.isNew)
-    console.log(_.isEmpty(current))
     return (
       <div className='modal fade' id='submission-modal' tabIndex='-1' role='dialog'>
         <div className='modal-dialog' role='document'>

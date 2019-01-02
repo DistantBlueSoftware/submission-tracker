@@ -1,0 +1,20 @@
+@media (min-width: 700px) {
+  .Home-loggedout {
+    width: 500px; 
+    height: 400px; 
+    position: absolute; 
+    right: 50px; 
+    background: rgba(58,188,232, 0.3); 
+    display: flex; 
+    flex-flow: column; 
+    align-items: center; 
+    justify-content: center; 
+    border-radius: 5px;
+    animation: slide-in 1s;
+  }
+}
+
+@keyframes slide-in {
+  from {right: -1000px;}
+  to {right: 50px;}
+}

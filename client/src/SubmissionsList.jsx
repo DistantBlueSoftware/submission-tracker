@@ -19,7 +19,6 @@ class SubmissionsList extends Component {
       all: subs, 
       active: subs.filter(sub => inactiveStatuses.indexOf(sub.status) === -1),
       inactive: subs.filter(sub => inactiveStatuses.indexOf(sub.status) !== -1),
-      count: subs.length,
       filter: 'all'
     }
   }
@@ -47,7 +46,7 @@ class SubmissionsList extends Component {
     const {count, modalOpen, modalData, filter} = this.state;
     return (
       <React.Fragment>
-        <Filters count={count} filter={filter} setFilter={this.setFilter} />
+        <Filters count={this.state.all.length} filter={filter} setFilter={this.setFilter} activeCount={this.state.active.length} inactiveCount={this.state.inactive.length} />
         <ReactTable data={this.state[filter]} 
           columns={[
             {
