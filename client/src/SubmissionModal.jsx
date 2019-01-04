@@ -84,9 +84,10 @@ class SubmissionModal extends Component {
   }
   
   render () {
-    const { submissions, publications, pieces } = this.props;
+    const { submissions, publications, pieces, fromPubPage } = this.props;
     const { current } = submissions;
     const isNew = this.props.isNew ? this.props.isNew : _.isEmpty(current);
+    const prefilledPubName = isNew && fromPubPage ? current.name : null;
     return (
       <div className='modal fade' id='submission-modal' tabIndex='-1' role='dialog'>
         <div className='modal-dialog' role='document'>
@@ -112,7 +113,7 @@ class SubmissionModal extends Component {
                 </div>
                 </div>
                 <div className='col-md-12'>
-                  <PublicationAutosuggest publications={publications} value={this.state.publication ? this.state.publication : ''} handleChange={this.handleChange} />
+                  <PublicationAutosuggest publications={publications} value={prefilledPubName || this.state.publication} handleChange={this.handleChange} />
                 </div>
                 <div className='col-md-6'>
                 <div className='form-group'>

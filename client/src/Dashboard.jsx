@@ -31,20 +31,20 @@ class Dashboard extends Component {
         <link rel='canonical' href='https://submissionmanager.phrasemagazine.com/dashboard' />
         </Helmet>
         <h1>dashboard - {user.name}</h1>
-        <h2>My Pieces</h2>
-        {pieces.all.length > 0 ?
-          pieces.all.map(piece => <p>{piece.title}</p>) : 
-          <p>No Pieces Tracked Yet -- why not make one?</p>
-        }
         <h2>Submissions</h2>
         {userSubs.length > 0 ? <SubmissionsList subs={userSubs} /> : 'No submissions yet. Get going!'}
+        <h2>My Pieces</h2>
+        {pieces.all.length > 0 ?
+          pieces.all.map(piece => <p>{piece.title} - {piece.wordCount} words</p>) : 
+          <p>No Pieces Tracked Yet -- why not make one?</p>
+        }
         <h2>Favorite Publications</h2>
         {user.favorites && user.favorites.length > 0 ? 
           <ul>
             {user.favorites.filter(fave => !!fave).map(fave => getNameForFave(fave))}
           </ul> : 'No faves yet. Why not find some?' 
         }
-        {/*<h2>My Pieces</h2>*/}
+        
         
       </div>
     )

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { SocialCard } from './SocialCard';
+import SubmissionModal from './SubmissionModal';
 import { Button } from './framework';
 import Helmet from 'react-helmet';
 import moment from 'moment';
@@ -17,13 +18,15 @@ class ViewPublication extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      addButton: 'Add to My Publications'
+      addButton: 'Add to My Publications',
+      showModal: false
     }
   }
   
   isFavorite = pub => {
-    if (this.props.user && this.props.user.favorites.length)
-      return ~this.props.user.favorites.indexOf(pub._id) || ~this.props.user.favorites.indexOf(pub.slug);
+    const { user } = this.props;
+    if (user && user.favorites && user.favorites.length)
+      return ~user.favorites.indexOf(pub._id) || ~user.favorites.indexOf(pub.slug);
   }
   
   addFavorite = (user, pub) => {
@@ -32,7 +35,13 @@ class ViewPublication extends Component {
   }
   
   getDateInfo = () => {
-    return 'no info';
+    const { current } = this.props.publications;
+    let result = 'no info';
+    if (current.openDates && current.openDates.length) {
+      result = current.openDates.map(d => <p>{d.openMonth}</p>)
+    }
+    // else if (current.dateOpenMonth1) result = month[current.dateOpenMonth1-1] + ' ' + current.dateOpenDay1 + '—' + month[current.dateCloseMonth1-1] + ' ' + current.dateCloseDay1;
+    return result;
   }
   
   componentDidMount = async () => {
@@ -42,6 +51,7 @@ class ViewPublication extends Component {
   
   render() {
     const {match, publications, submissions, user} = this.props;
+    const { showModal } = this.state;
     const { all: allSubmissions } = submissions;
     const userSubs = allSubmissions.filter(sub => sub.user === user.username);
     const { current } = publications;
@@ -86,11 +96,12 @@ class ViewPublication extends Component {
         <div className='col-md-6'>
           <h4>{current.description || 'no description'}</h4>
         </div>
+        <Button blue data-toggle='modal' data-target='#submission-modal'>Submit Here</Button>
         <div className='col-md-6'>
           Word Count (maximum): {current.wordCount || 'no info'}<br />
           Submission Fee: {current.fee ? `$${current.fee}` : 'no info'}<br />
           Payment Amount: {current.pay ? `$${current.pay}/${current.payType}` : 'no info'}<br />
-          Dates Open: {current.alwaysOpen ? 'Always Open' : current.dateOpenMonth1 ? month[current.dateOpenMonth1-1] + ' ' + current.dateOpenDay1 + '—' + month[current.dateCloseMonth1-1] + ' ' + current.dateCloseDay1 : this.getDateInfo()}<br />
+          Dates Open: {current.alwaysOpen ? 'Always Open' : this.getDateInfo()}<br />
           Average Response Time: {averageResponseTime() !== 'NaN days' ? averageResponseTime() : 'insufficient info'}<br />
           Acceptance Rate: {acceptanceRate() !== 'NaN% (0/0)' ? acceptanceRate() : 'insufficient info'}<br />
         </div>
@@ -111,6 +122,7 @@ class ViewPublication extends Component {
           <p style={{fontSize: '10px'}}>last updated: {moment(current.lastUpdatedDate).format('dddd, MMMM Do YYYY, h:mm:ss A')} by {current.lastUpdatedBy}</p>
         </div>
       </div>
+      <SubmissionModal show={showModal} fromPubPage={true} />
       </div>
     )
   }
