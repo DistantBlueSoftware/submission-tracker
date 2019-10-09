@@ -52,7 +52,6 @@ export const newPublication = (pub, callback) => async dispatch => {
 export const updatePublication = (pub, callback) => async dispatch => {
   try {
     const id = pub._id || pub.slug;
-    console.log(id)
     const response = await axios.put(`/api/publications/${id}`, pub);
     const data = response.length ? response : response.data;
     dispatch ({ type: UPDATE_PUBLICATION, payload: data });

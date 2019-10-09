@@ -89,14 +89,13 @@ class PublicationDetail extends Component {
     const { match } = this.props;
     let openDates = [];
     for (let i = 1; i <= this.state.num; i++) {
-      openDates.push({
+      if (this.state[`dateOpenMonth${i}`]) openDates.push({
         openMonth: this.state[`dateOpenMonth${i}`],
-        openDay: this.state[`dateOpenDay${i}`],
+        openDay: +this.state[`dateOpenDay${i}`],
         closeMonth: this.state[`dateCloseMonth${i}`],
-        closeDay: this.state[`dateCloseDay${i}`]
+        closeDay: +this.state[`dateCloseDay${i}`]
       })
     }
-    console.log(openDates)
     this.setState({
       lastUpdatedBy: this.props.user ? this.props.user.username : '',
       lastUpdatedDate: new Date(),
@@ -104,12 +103,18 @@ class PublicationDetail extends Component {
     })
     if (match && match.params && match.params.slug) {
       let pub = this.state;
-      delete pub.num;
-      this.props.updatePublication(this.state, () => toast.success('Publication updated!'));
+      console.log(pub)
+      pub = {
+        ...pub, 
+        lastUpdatedBy: this.props.user ? this.props.user.username : '',
+        lastUpdatedDate: new Date(),
+        openDates
+      }
+      console.log(pub)
+      this.props.updatePublication(pub, () => toast.success('Publication updated!'));
     } else {
       let pub = this.state;
       //generate slug; if identical slug exists, append a number
-      delete pub.num;
       pub.slug = slugify(pub.name);
       const num = iterator(this.props.publications.all, 'slug', pub.slug);
       if (num !== 0) pub.slug = pub.slug + '-' + num;
@@ -156,8 +161,10 @@ class PublicationDetail extends Component {
       if (!publications.current.name) {
         current = await this.props.findPublication(match.params.slug);
       } else current = publications.current;
+      const num = current && current.openDates ? current.openDates.length + 1 : 1;
       this.setState({
-        ...current
+        ...current,
+        num
       })
       this.transposeDateInfo(current);
     }
@@ -167,8 +174,8 @@ class PublicationDetail extends Component {
     const {match, user, removePublication} = this.props;
     const genres = ['Fiction', 'Nonfiction', 'Poetry', 'Flash Fiction', 'Reviews', 'Translation', 'Art', 'Sound', 'Comics', 'Dance', 'Hybrid']
     const isNew = match.params && match.params.slug ? false : true;
-    const pageTitle = this.state.name ? this.state.name : 'New Publication';
-    const genreInfo = this.state.genre ? this.state.genre.join(',') : null;
+    const pageTitle = this.state.name || 'New Publication';
+    const genreInfo = this.state.genre || null;
     return (
     <div className='container-fluid'>
       <Helmet>
@@ -236,7 +243,7 @@ class PublicationDetail extends Component {
         </div>
         <div className='row'>
           <div className='col-md-12'>
-              <GenreAutosuggest genres={genres} value={genreInfo} handleChange={this.handleChange} handleSuggestion={this.handleSuggestion} />
+              <GenreAutosuggest genres={genres} value={genreInfo.join(', ')} handleChange={this.handleChange} handleSuggestion={this.handleSuggestion} />
           </div>
         </div>
         <Button green type='submit'>{isNew ? 'Add New' : 'Update'}</Button>

@@ -1,9 +1,8 @@
 body {
-  font-family: 'Raleway', sans-serif !important;
+  font-family: 'Raleway', sans-serif;
   color: rgb(60, 60, 60);
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
 }
 
 a, a:hover, a:visited, a:active {
@@ -17,4 +16,13 @@ a:hover {
 
 ul {
   list-style-type: none;
+}
+
+::selection {
+  background: rgba(14, 85, 130, 0.6); /* WebKit/Blink Browsers */
+  color: white;
+}
+::-moz-selection {
+  background: rgba(14, 85, 130, 0.6); /* Gecko Browsers */
+  color: white;
 }

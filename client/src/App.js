@@ -13,6 +13,7 @@ import Dashboard from './Dashboard';
 import PublicationDetail from './PublicationDetail';
 import Login from './Login';
 import Register from './Register';
+import PublicationsList from './PublicationsList';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import "react-table/react-table.css";
@@ -42,6 +43,7 @@ class App extends Component {
                 <Route exact path='/dashboard' component={Dashboard} />
                 <Route exact path='/login' component={Login} />
                 <Route exact path='/register' component={Register} />
+                <Route exact path='/publications' component={PublicationsList} />
                 <Route exact path='/publications/new' component={PublicationDetail} />
                 <Route exact path='/publications/:slug' component={ViewPublication} />
                 <Route exact path='/publications/:slug/edit' component={PublicationDetail} />

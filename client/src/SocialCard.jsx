@@ -1,23 +1,25 @@
 import React from 'react';
+import styled from 'styled-components';
 
-const socialStyle = {
-  height: '60px',
-  width: '300px',
-  padding: '10px',
-  display: 'block',
-  border: '1px solid black'
-}
+const SocialContainer = styled.div`
+  height: 60px;
+  width: 300px;
+  padding: 10px;
+  display: block;
+  border-radius: 5px;
+  border: 1px solid #c0c0c0;
+`
 
-const buttonStyle = {
-  display: 'inline-block',
-  marginRight: '10px',
-  fontSize: '24px'
-}
+const SocialIcon = styled.i`
+  display: inline-block;
+  margin-right: 10px;
+  font-size: 24px;
+`
 
 export const SocialCard = ({link, facebook, twitter}) => (
-  <div style={socialStyle}>
-    {link && <a href={link} target='_blank'><i className='fas fa-link' style={{color: '#449d44', ...buttonStyle}} />{link}</a>}
-    {facebook && <a href={facebook} target='_blank'><i className='fab fa-facebook' style={{color: '#356795', ...buttonStyle}} /></a>}
-    {twitter && <a href={twitter} target='_blank'><i className='fab fa-twitter' style={{color: '#4e8abe', ...buttonStyle}} /></a>}
-  </div>
+  <SocialContainer>
+    {link && <a href={link} target='_blank'><SocialIcon className='fas fa-link' style={{color: '#449d44'}} />{link}</a>}
+    {facebook && <a href={facebook} target='_blank'><SocialIcon className='fab fa-facebook' style={{color: '#356795'}} /></a>}
+    {twitter && <a href={twitter} target='_blank'><SocialIcon className='fab fa-twitter' style={{color: '#4e8abe'}} /></a>}
+  </SocialContainer>
 )

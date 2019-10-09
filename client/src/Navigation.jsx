@@ -19,6 +19,9 @@ const Navigation = ({user, history, doLogout}) => (
     <ul className='navbar-nav mr-auto'>
       <NavLink className='nav-link' to='/'><li className='nav-item'>Home</li></NavLink>
       <NavLink className='nav-link' to='/about'><li className='nav-item'>About</li></NavLink>
+      {!user.authenticated && 
+        <NavLink className='nav-link' to='/publications'><li className='nav-item'>Publications</li></NavLink>
+      }
       {user.authenticated &&
         <NavLink className='nav-link' to='/dashboard'><li className='nav-item'>Dashboard</li></NavLink>
       }

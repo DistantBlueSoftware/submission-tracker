@@ -7,6 +7,7 @@ import { Button } from './framework';
 import Helmet from 'react-helmet';
 import moment from 'moment';
 import * as actions from './actions';
+import styled from 'styled-components';
 
 const month = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -14,13 +15,37 @@ const mapStateToProps = state => {
   return {...state};
 }
 
+const BorderedContainer = styled.div`
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #c0c0c0;
+`
+
+const DateIcon = styled.i`
+  margin-right: 10px;
+  color: #9abddd;
+`
+
+const DatePeriod = ({ date }) => (
+  <p><DateIcon className='fas fa-calendar' />{month[date.openMonth - 1]} {date.openDay} - {month[date.closeMonth - 1]} {date.closeDay} </p>
+)
+
 class ViewPublication extends Component {
   constructor(props) {
     super(props);
     this.state = {
       addButton: 'Add to My Publications',
-      showModal: false
+      showModal: false,
+      modalData: null
     }
+  }
+  
+  openModal = data => {
+    this.setState({
+      modalData: data,
+      showModal: true
+    });
+    window.$('#submission-modal').modal();
   }
   
   isFavorite = pub => {
@@ -38,7 +63,7 @@ class ViewPublication extends Component {
     const { current } = this.props.publications;
     let result = 'no info';
     if (current.openDates && current.openDates.length) {
-      result = current.openDates.map(d => <p>{d.openMonth}</p>)
+      result = current.openDates.map(d => <DatePeriod date={d} />)
     }
     // else if (current.dateOpenMonth1) result = month[current.dateOpenMonth1-1] + ' ' + current.dateOpenDay1 + '—' + month[current.dateCloseMonth1-1] + ' ' + current.dateCloseDay1;
     return result;
@@ -50,7 +75,7 @@ class ViewPublication extends Component {
   }
   
   render() {
-    const {match, publications, submissions, user} = this.props;
+    const {match, publications, submissions, user, openSubmission} = this.props;
     const { showModal } = this.state;
     const { all: allSubmissions } = submissions;
     const userSubs = allSubmissions.filter(sub => sub.user === user.username);
@@ -72,7 +97,7 @@ class ViewPublication extends Component {
       let acceptances = pubSubs.filter(sub => sub.status === 'Accepted').length;
       return ((acceptances / count) * 100).toFixed(2) + '%' + ` (${acceptances}/${count})`;
     }
-    const userSubsToPub = userSubs.filter(sub => sub.publication === current.name).map((sub, index) => <tr key={index}><td>{sub.title}</td><td>{moment(sub.dateSubmitted).format('MM/DD/YYYY')}</td><td>{sub.status}</td></tr>)
+    const userSubsToPub = userSubs.filter(sub => sub.publication === current.name).map((sub, index) => <tr key={index} style={{cursor: 'pointer'}} onClick={e => openSubmission(sub._id, res => this.openModal(res))}><td>{sub.title}</td><td>{moment(sub.dateSubmitted).format('MM/DD/YYYY')}</td><td>{sub.status}</td></tr>)
     const AddButton = this.isFavorite(current) ? <Button disabled green>Added to Favorites</Button> : <Button green onClick={e => this.addFavorite(user, current)}>{this.state.addButton}</Button>
     return (
       <div className='container-fluid'>
@@ -101,7 +126,7 @@ class ViewPublication extends Component {
           Word Count (maximum): {current.wordCount || 'no info'}<br />
           Submission Fee: {current.fee ? `$${current.fee}` : 'no info'}<br />
           Payment Amount: {current.pay ? `$${current.pay}/${current.payType}` : 'no info'}<br />
-          Dates Open: {current.alwaysOpen ? 'Always Open' : this.getDateInfo()}<br />
+          Dates Open: {current.alwaysOpen ? 'Always Open' : <BorderedContainer>{this.getDateInfo()}</BorderedContainer>}<br />
           Average Response Time: {averageResponseTime() !== 'NaN days' ? averageResponseTime() : 'insufficient info'}<br />
           Acceptance Rate: {acceptanceRate() !== 'NaN% (0/0)' ? acceptanceRate() : 'insufficient info'}<br />
         </div>
