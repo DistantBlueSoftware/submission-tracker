@@ -20,27 +20,27 @@ let currentNum = 1;
 
 class DateRange extends Component {
   render() {
-    const {num, parentState, handleChange} = this.props;
+    const {date, index, handleChange} = this.props;
     return (
       <React.Fragment>
         <div className='col-md-2'>
           <div className='form-group'>
-            <label htmlFor={`dateOpenMonth${num}`}>Open Date</label>
-            <select className='form-control' name={`dateOpenMonth${num}`} value={parentState[`dateOpenMonth${num}`]} onChange={handleChange}>
+            <label htmlFor={`date.openMonth${index}`}>Open Date</label>
+            <select className='form-control' name={`date.openMonth${index}`} value={date.openMonth} onChange={handleChange}>
               {months}
             </select>
-            <select className='form-control' name={`dateOpenDay${num}`} value={parentState[`dateOpenDay${num}`]} onChange={handleChange}>
+            <select className='form-control' name={`date.openDay${index}`} value={date.openDay} onChange={handleChange}>
               {days}
             </select>
           </div>
         </div>
         <div className='col-md-2'>
           <div className='form-group'>
-            <label htmlFor={`dateCloseMonth${num}`}>Close Date</label>
-            <select className='form-control' name={`dateCloseMonth${num}`} value={parentState[`dateCloseMonth${num}`]} onChange={handleChange}>
+            <label htmlFor={`date.closeMonth${index}`}>Close Date</label>
+            <select className='form-control' name={`date.closeMonth${index}`} value={date.closeMonth} onChange={handleChange}>
               {months}
             </select>
-            <select className='form-control' name={`dateCloseDay${num}`} value={parentState[`dateCloseDay${num}`]} onChange={handleChange}>
+            <select className='form-control' name={`date.closeDay${index}`} value={date.closeDay} onChange={handleChange}>
               {days}
             </select>
           </div>
@@ -54,15 +54,11 @@ class PublicationDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      num: 1,
       dateRanges: [1],
       alwaysOpen: false,
-      dateOpenMonth1: '01',
-      dateOpenDay1: 1,
-      dateCloseMonth1: '01',
-      dateCloseDay1: 1,
       payType: 'work',
       genre: [],
+      openDates: [{openDay: 1, openMonth: 1, closeMonth: 2, closeDay: 1}],
       lastUpdatedBy: this.props.user ? this.props.user.username : ''
     }
   }
@@ -71,7 +67,18 @@ class PublicationDetail extends Component {
     const target = e.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-    this.setState({
+    if (name.slice(0, 5) === 'date.') {
+      const index = name.slice(-1);
+      const key = name.slice(5, name.length - 1);
+      const newDate = this.state.openDates[index];
+      newDate[key] = value;
+      let openDates = this.state.openDates.slice(0,index);
+      openDates.push(newDate);
+      openDates = openDates.concat(this.state.openDates.slice(index+1))
+      this.setState({
+        openDates
+      })
+    } else this.setState({
       [name]: value
     });
   }
@@ -87,28 +94,12 @@ class PublicationDetail extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const { match } = this.props;
-    let openDates = [];
-    for (let i = 1; i <= this.state.num; i++) {
-      if (this.state[`dateOpenMonth${i}`]) openDates.push({
-        openMonth: this.state[`dateOpenMonth${i}`],
-        openDay: +this.state[`dateOpenDay${i}`],
-        closeMonth: this.state[`dateCloseMonth${i}`],
-        closeDay: +this.state[`dateCloseDay${i}`]
-      })
-    }
-    this.setState({
-      lastUpdatedBy: this.props.user ? this.props.user.username : '',
-      lastUpdatedDate: new Date(),
-      openDates
-    })
     if (match && match.params && match.params.slug) {
       let pub = this.state;
-      console.log(pub)
       pub = {
         ...pub, 
         lastUpdatedBy: this.props.user ? this.props.user.username : '',
         lastUpdatedDate: new Date(),
-        openDates
       }
       console.log(pub)
       this.props.updatePublication(pub, () => toast.success('Publication updated!'));
@@ -124,31 +115,11 @@ class PublicationDetail extends Component {
   }
   
   addNewDateRange = () => {
-    const newNum = this.state.num + 1;
-    if (newNum < 7) {
-      let result = this.state.dateRanges;
-      for (let i = result.length; i < newNum; i++) {
-        result.push(i);
-      }
+    if (this.state.openDates.length + 1 < 7) {
+      let result = this.state.openDates;
+      result.push({openMonth: 1, openDay: 1, closeMonth: 1, closeDay: 1});
       this.setState({
-        num: newNum,
-        dateRanges: result
-      })
-    }
-  }
-  
-  transposeDateInfo = (pub) => {
-    let transposedDates = {};
-    if (pub && pub.openDates) {
-      for (let i in pub.openDates) {
-        transposedDates[`dateOpenMonth${i+1}`] = pub.openDates[i].openMonth;
-        transposedDates[`dateOpenDay${i+1}`] = pub.openDates[i].openDay;
-        transposedDates[`dateCloseMonth${i+1}`] = pub.openDates[i].closeMonth;
-        transposedDates[`dateCloseDay${i+1}`] = pub.openDates[i].closeDay;
-      }
-      this.setState({
-        ...transposedDates,
-        num: pub.openDates.length
+        openDates: result
       })
     }
   }
@@ -164,13 +135,11 @@ class PublicationDetail extends Component {
       const num = current && current.openDates ? current.openDates.length + 1 : 1;
       this.setState({
         ...current,
-        num
+        num,
       })
-      this.transposeDateInfo(current);
     }
   }
   render() {
-    // console.log(this.state)
     const {match, user, removePublication} = this.props;
     const genres = ['Fiction', 'Nonfiction', 'Poetry', 'Flash Fiction', 'Reviews', 'Translation', 'Art', 'Sound', 'Comics', 'Dance', 'Hybrid']
     const isNew = match.params && match.params.slug ? false : true;
@@ -213,7 +182,7 @@ class PublicationDetail extends Component {
             <h4>Reading Periods</h4>
             {!this.state.alwaysOpen && 
               <React.Fragment>
-                {this.state.dateRanges.map((item, index) => <DateRange num={index+1} parentState={this.state} handleChange={this.handleChange} />)}
+                {this.state.openDates.map((date, index) => <DateRange date={date} index={index} handleChange={this.handleChange} />)}
                 <AddNewButton action={this.addNewDateRange} />
               </React.Fragment>
             }
