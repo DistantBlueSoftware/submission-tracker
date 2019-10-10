@@ -15,6 +15,21 @@ const sortTable = by => {
   console.log(`sorting by ${by}`)
 }
 
+const isPublicationOpen = pub => {
+  if (pub.alwaysOpen) return true;
+  if (!pub.openDates || !pub.openDates.length) return false;
+  let isOpen = false;
+  pub.openDates.forEach(date => {
+    let openDate = moment(moment().format('YYYY') + '-' + date.openMonth + '-' + date.openDay);
+    let closeDate = moment(moment().format('YYYY') + '-' + date.closeMonth + '-' + date.closeDay);
+    if (closeDate.isSame(openDate)) isOpen = true;
+    if (closeDate.isBefore(openDate)) closeDate = closeDate.add(1, 'year');
+    const range = moment.range(openDate, closeDate);
+    if (range.contains(moment())) isOpen = true;
+  })
+  return isOpen;
+}
+
 const PublicationsList = ({publications, openPublication}) => {
   const { all } = publications;
   return (
@@ -27,16 +42,10 @@ const PublicationsList = ({publications, openPublication}) => {
       </thead>
       <tbody>
         {all && all.map(pub => {
-          let openDate = moment(moment().format('YYYY') + '-' + pub.dateOpenMonth1 + '-' + pub.dateOpenDay1);
-          let closeDate = moment(moment().format('YYYY') + '-' + pub.dateCloseMonth1 + '-' + pub.dateCloseDay1);
-          if (closeDate === openDate || pub.alwaysOpen) pub.open = true;
-          if (closeDate < openDate) closeDate = closeDate.add(1, 'year');
-          const range = moment.range(openDate, closeDate);
-          if (range.contains(moment())) pub.open = true;
           return (
             <tr key={pub._id || pub.slug} onClick={e => openPublication(pub)}>
               <td>{pub.name}</td>
-              <td style={{textAlign: 'center'}}>{pub.open ? <i className='fas fa-check-square' style={{fontSize: '22px', color: '#478947'}}></i> : 'no'}</td>
+              <td style={{textAlign: 'center'}}>{isPublicationOpen(pub) ? <i className='fas fa-check-square' style={{fontSize: '22px', color: '#478947'}}></i> : 'no'}</td>
             </tr>
           )
         })}
