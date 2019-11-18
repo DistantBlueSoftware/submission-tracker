@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const router = require('./router');
 const cors = require('cors');
+const sslRedirect = require('heroku-ssl-redirect');
 //and create our instances
 
 const app = express();
@@ -30,6 +31,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 if (process.env.REACT_APP_ENV !=='localhost') {
+  app.use(sslRedirect());
   const path = require('path');
   app.use(express.static(path.join(__dirname, 'client/build')));
 
